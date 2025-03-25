@@ -8,6 +8,7 @@ import StepTrackerPage from "./pages/StepTracker";
 import HealthPage from "./pages/HeathSummary";
 import RecommendationPage from "./pages/Recommendations";
 import ProfilePage from "./pages/Profile";
+import ChatArogya from "./components/ChatArogya";
 
 const navItems = [
   {
@@ -51,6 +52,7 @@ function App() {
           </Routes>
         </main>
         <MobileNav navItems={navItems} />
+        <ChatArogya/>
       </div>
     </Router>
   );
