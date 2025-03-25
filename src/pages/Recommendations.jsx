@@ -41,18 +41,18 @@ const recommendationData = {
   },
   exercise: {
     cardio: [
-      { name: "Brisk walking", duration: "30 mins", calories: 150, gifUrl: "/exercise-walking.gif" },
-      { name: "Cycling", duration: "20 mins", calories: 200, gifUrl: "/exercise-cycling.gif" },
+      { name: "Brisk walking", duration: "30 mins", calories: 150, gifUrl: "/gif/exercise/walking.gif" },
+      { name: "Cycling", duration: "20 mins", calories: 200, gifUrl: "/gif/exercise/cycling.gif" },
     ],
     strength: [
-      { name: "Push-ups", sets: 3, reps: 12, gifUrl: "/exercise-pushups.gif" },
-      { name: "Squats", sets: 3, reps: 15, gifUrl: "/gif/bearSquat.gif" },
-      { name: "Planks", sets: 3, duration: "30 secs", gifUrl: "/exercise-planks.gif" },
+      { name: "Push-ups", sets: 3, reps: 12, gifUrl: "/gif/exercise/pushUps.gif" },
+      { name: "Squats", sets: 3, reps: 15, gifUrl: "/gif/exercise/bearSquat.gif" },
+      { name: "Dumbbell", sets: 3, reps: 15, gifUrl: "/gif/exercise/dumbbellTricepsKickback.gif" },
     ],
     yoga: [
-      { name: "Sun Salutation", duration: "10 mins", gifUrl: "/yoga-sun-salutation.gif" },
-      { name: "Warrior Pose", duration: "5 mins", gifUrl: "/yoga-warrior.gif" },
-      { name: "Child's Pose", duration: "5 mins", gifUrl: "/yoga-child-pose.gif" },
+      { name: "TadaSana", duration: "5 mins", gifUrl: "/gif/yoga/tadasana.gif" },
+      { name: "VajraSana", duration: "5 mins", gifUrl: "/gif/yoga/vajrasana.gif" },
+      { name: "Uttanasana", duration: "5 mins", gifUrl: "/gif/yoga/uttanasana.gif" },
     ],
   },
 }

@@ -3,7 +3,8 @@ import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card"
 import { Button } from "../components/ui/button"
 import { Badge } from "../components/ui/badge"
 import { Progress } from "../components/ui/progress"
-import { Heart, Footprints, Droplets, Award, TrendingUp, Lightbulb } from "lucide-react"
+import { Heart, Footprints, Droplets, Award, TrendingUp, Lightbulb, FireExtinguisher, Flame } from "lucide-react"
+import { vitalService } from "../services/api"
 
 // Dummy data for demonstration
 const healthData = {
@@ -13,7 +14,7 @@ const healthData = {
   sleep: 7.5,
   water: 1.8,
   calories: 1850,
-  goalSteps: 10000,
+  goalSteps: 2000,
   goalWater: 2.5,
   goalCalories: 2000,
 }
@@ -28,12 +29,46 @@ const quotes = [
 
 export default function Dashboard() {
   const [quote, setQuote] = useState("")
-
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [stats, setStats] = useState({})
+  
   useEffect(() => {
     // Get a random quote
     const randomQuote = quotes[Math.floor(Math.random() * quotes.length)]
     setQuote(randomQuote)
   }, [])
+
+  useEffect(() => {
+    const fetchDashboardStats = async () => {
+      setLoading(true)
+      try {
+        const data = await vitalService.getDashboardStats()
+        console.log("Data", data)
+        setStats(data)
+      } catch (err) {
+        setError(err.message || 'Failed to fetch dashboard stats')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchDashboardStats()
+  }, [])
+
+  if (loading) {
+    return <div className="flex items-center justify-center lg:h-[70vh] bg-[#191E29]">
+Loading....    </div>
+  }
+
+  if (error) {
+    return (
+      <div className="bg-red-500/10 text-red-500 p-4 rounded-lg">
+        {error}
+      </div>
+    )
+  }
+ 
 
   return (
     <div className="space-y-6 page-transition">
@@ -61,7 +96,7 @@ export default function Dashboard() {
           <CardContent className="p-4 flex flex-col items-center justify-center">
             <Heart className="w-8 h-8 text-[#FF4D4D] mb-2" />
             <p className="text-[#A1A1A1] text-sm">Heart Rate</p>
-            <p className="text-2xl font-bold">{healthData.heartRate}</p>
+            <p className="text-2xl font-bold">{stats.vitals.heart_rate}</p>
             <p className="text-xs text-[#A1A1A1]">bpm</p>
           </CardContent>
         </Card>
@@ -70,8 +105,8 @@ export default function Dashboard() {
           <CardContent className="p-4 flex flex-col items-center justify-center">
             <Footprints className="w-8 h-8 text-[#16A34A] mb-2" />
             <p className="text-[#A1A1A1] text-sm">Steps</p>
-            <p className="text-2xl font-bold">{healthData.steps.toLocaleString()}</p>
-            <Progress value={healthData.steps} max={healthData.goalSteps} className="mt-2 w-full" />
+            <p className="text-2xl font-bold">{stats.vitals.step_count.toLocaleString()}</p>
+            <Progress value={stats.vitals.step_count} max={healthData.goalSteps} className="mt-2 w-full" />
           </CardContent>
         </Card>
 
@@ -79,17 +114,17 @@ export default function Dashboard() {
           <CardContent className="p-4 flex flex-col items-center justify-center">
             <Droplets className="w-8 h-8 text-[#06B6D4] mb-2" />
             <p className="text-[#A1A1A1] text-sm">Glucose</p>
-            <p className="text-2xl font-bold">{healthData.glucose}</p>
+            <p className="text-2xl font-bold">{stats.vitals.blood_sugar}</p>
             <p className="text-xs text-[#A1A1A1]">mg/dL</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="p-4 flex flex-col items-center justify-center">
-            <TrendingUp className="w-8 h-8 text-[#16A34A] mb-2" />
+            <Flame className="w-8 h-8 text-[#f93131] mb-2" />
             <p className="text-[#A1A1A1] text-sm">Sleep</p>
-            <p className="text-2xl font-bold">{healthData.sleep}</p>
-            <p className="text-xs text-[#A1A1A1]">hours</p>
+            <p className="text-2xl font-bold">{stats.vitals.calories_burned}</p>
+            <p className="text-xs text-[#A1A1A1]">kcal</p>
           </CardContent>
         </Card>
       </div>
@@ -122,30 +157,40 @@ export default function Dashboard() {
             <div>
               <p className="text-sm text-[#A1A1A1]">Steps</p>
               <p className="font-medium">
-                {healthData.steps.toLocaleString()} / {healthData.goalSteps.toLocaleString()}
+                {stats.aggregated.step_count.toLocaleString()} / {(stats.aggregated.step_count+10000).toLocaleString()}
               </p>
             </div>
-            <Progress value={healthData.steps} max={healthData.goalSteps} className="w-1/2" />
+            <Progress value={stats.aggregated.step_count} max={stats.aggregated.step_count+ 10000} className="w-1/2" />
           </div>
 
           <div className="flex justify-between items-center">
             <div>
-              <p className="text-sm text-[#A1A1A1]">Water</p>
+              <p className="text-sm text-[#A1A1A1]">Distance</p>
               <p className="font-medium">
-                {healthData.water}L / {healthData.goalWater}L
+              {stats.aggregated.step_count.toFixed(0)} km / {(stats.aggregated.step_count * 1.2).toFixed(0)} km
               </p>
             </div>
-            <Progress value={healthData.water} max={healthData.goalWater} className="w-1/2" />
+            <Progress value={stats.aggregated.step_count} max={(stats.aggregated.step_count * 1.2)} className="w-1/2" />
           </div>
 
           <div className="flex justify-between items-center">
             <div>
               <p className="text-sm text-[#A1A1A1]">Calories</p>
               <p className="font-medium">
-                {healthData.calories} / {healthData.goalCalories}
+                {stats.aggregated.calories_burned.toFixed(0)} / {(stats.aggregated.calories_burned *1.2).toFixed(0)}
               </p>
             </div>
-            <Progress value={healthData.calories} max={healthData.goalCalories} className="w-1/2" />
+            <Progress value={stats.aggregated.calories_burned} max={stats.aggregated.calories_burned *1.2} className="w-1/2" />
+          </div>
+
+          <div className="flex justify-between items-center">
+            <div>
+              <p className="text-sm text-[#A1A1A1]">Heart Rate</p>
+              <p className="font-medium">
+                {stats.aggregated.heart_rate}bpm / {(stats.aggregated.heart_rate * 1.2).toFixed(0)}bpm
+              </p>
+            </div>
+            <Progress value={stats.aggregated.heart_rate} max={stats.aggregated.heart_rate * 1.2} className="w-1/2" />
           </div>
         </CardContent>
       </Card>

@@ -6,8 +6,8 @@ self.addEventListener('install', event => {
           '/',
           '/index.html',
           '/vite.svg',
-          '/icon-192x192.png',
-          '/icon-512x512.png'
+          '/logo_128.png.png',
+          '/129.png'
         ]);
       })
     );
