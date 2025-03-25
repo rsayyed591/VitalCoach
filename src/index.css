@@ -1,3 +1,37 @@
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --primary-green: #16a34a;
+  --primary-blue: #06b6d4;
+  --dark-bg: #121212;
+  --card-bg: #1e1e1e;
+  --slate-bg: #2a2d3a;
+  --text-primary: #e4e4e4;
+  --text-secondary: #a1a1a1;
+  --alert-red: #ff4d4d;
+  --success-green: #22c55e;
+}
+
+@layer base {
+  body {
+    @apply font-exo bg-[#121212] text-[#E4E4E4];
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-[#1E1E1E]/80 backdrop-blur-md border border-white/10 rounded-xl shadow-lg;
+  }
+
+  .neuro-button {
+    @apply bg-[#2A2D3A] rounded-lg shadow-[5px_5px_10px_rgba(0,0,0,0.3),-5px_-5px_10px_rgba(68,68,68,0.2)] hover:shadow-[inset_5px_5px_10px_rgba(0,0,0,0.3),inset_-5px_-5px_10px_rgba(68,68,68,0.2)] transition-all duration-300;
+  }
+
+  .page-transition {
+    @apply transition-all duration-300 ease-in-out;
+  }
+}
+
