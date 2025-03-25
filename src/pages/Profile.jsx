@@ -1,7 +1,5 @@
-"use client"
-
-import { useState } from "react"
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "../components/ui/card"
+import { useState, useEffect } from "react"
+import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card"
 import { Button } from "../components/ui/button"
 import { Badge } from "../components/ui/badge"
 import { Progress } from "../components/ui/progress"
@@ -20,9 +18,10 @@ import {
   Zap,
   CheckCircle,
 } from "lucide-react"
+import { MedicalFormModal } from "../components/MedicalFormModal"
 
 // Dummy data for demonstration
-const profileData = {
+const initialProfileData = {
   name: "Vivek Chouhan",
   age: 22,
   height: 175,
@@ -61,6 +60,62 @@ const profileData = {
 
 export default function Profile() {
   const [activeTab, setActiveTab] = useState("achievements")
+  const [profileData, setProfileData] = useState(initialProfileData)
+  const [isMedicalFormOpen, setIsMedicalFormOpen] = useState(false)
+  const [streakCount, setStreakCount] = useState(initialProfileData.streak)
+
+  // Simulate dynamic streak
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // Randomly increase streak (10% chance)
+      if (Math.random() < 0.1) {
+        setStreakCount((prev) => prev + 1)
+      }
+    }, 30000) // Check every 30 seconds
+
+    return () => clearInterval(interval)
+  }, [])
+
+  const handleShareProgress = () => {
+    alert("Sharing your progress to social media!")
+  }
+
+  const handleUpdateMedicalHistory = (updatedData) => {
+    setProfileData((prev) => ({
+      ...prev,
+      medicalHistory: updatedData,
+    }))
+  }
+
+  const completeAchievement = (index) => {
+    const updatedAchievements = [...profileData.achievements]
+    if (!updatedAchievements[index].completed) {
+      updatedAchievements[index].progress = 100
+      updatedAchievements[index].completed = true
+
+      setProfileData((prev) => ({
+        ...prev,
+        achievements: updatedAchievements,
+      }))
+    }
+  }
+
+  const incrementAchievementProgress = (index, amount = 10) => {
+    const updatedAchievements = [...profileData.achievements]
+    if (!updatedAchievements[index].completed) {
+      const newProgress = Math.min(100, (updatedAchievements[index].progress || 0) + amount)
+      updatedAchievements[index].progress = newProgress
+
+      if (newProgress >= 100) {
+        updatedAchievements[index].completed = true
+      }
+
+      setProfileData((prev) => ({
+        ...prev,
+        achievements: updatedAchievements,
+      }))
+    }
+  }
 
   return (
     <div className="space-y-6 page-transition">
@@ -85,11 +140,11 @@ export default function Profile() {
               <div className="flex items-center mt-2 gap-2">
                 <Badge variant="success" className="flex items-center gap-1">
                   <Flame className="w-3 h-3" />
-                  {profileData.streak} Day Streak
+                  {streakCount} Day Streak
                 </Badge>
 
-                <Button variant="outline" size="sm" className="h-7 px-2">
-                  <Share2 className="w-4 h-4 mr-1" />
+                <Button variant="outline" size="sm" className="h-7 px-2" onClick={handleShareProgress}>
+                  <Share2 className="w-4 h-4 mr-1" /> Share
                 </Button>
 
                 <Button variant="outline" size="sm" className="h-7 px-2">
@@ -121,7 +176,7 @@ export default function Profile() {
             <Card className="flex flex-col items-center justify-center p-4">
               <Trophy className="w-8 h-8 text-[#16A34A] mb-2" />
               <p className="text-xs text-[#A1A1A1]">Achievements</p>
-              <p className="text-xl font-bold">12</p>
+              <p className="text-xl font-bold">{profileData.achievements.filter((a) => a.completed).length}</p>
             </Card>
 
             <Card className="flex flex-col items-center justify-center p-4">
@@ -165,7 +220,16 @@ export default function Profile() {
                       )}
                     </div>
                     <p className="text-sm text-[#A1A1A1]">{achievement.description}</p>
-                    {!achievement.completed && <Progress value={achievement.progress} max={100} className="mt-2" />}
+                    {!achievement.completed && (
+                      <>
+                        <Progress value={achievement.progress} max={100} className="mt-2" />
+                        <div className="mt-2 flex justify-end">
+                          <Button variant="outline" size="sm" onClick={() => incrementAchievementProgress(index)}>
+                            Progress
+                          </Button>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
               ))}
@@ -181,8 +245,8 @@ export default function Profile() {
             <CardContent>
               <div className="flex gap-1 mt-2">
                 {Array.from({ length: 30 }).map((_, index) => {
-                  const isActive = index < profileData.streak
-                  const isToday = index === profileData.streak - 1
+                  const isActive = index < streakCount
+                  const isToday = index === streakCount - 1
 
                   return (
                     <div
@@ -208,8 +272,7 @@ export default function Profile() {
 
               <div className="mt-4 text-center">
                 <p className="text-sm">
-                  You're on a <span className="font-bold text-[#16A34A]">{profileData.streak} day streak</span>! Keep it
-                  up!
+                  You're on a <span className="font-bold text-[#16A34A]">{streakCount} day streak</span>! Keep it up!
                 </p>
               </div>
             </CardContent>
@@ -240,11 +303,6 @@ export default function Profile() {
                 <p className="text-[#A1A1A1]">No medical conditions recorded.</p>
               )}
             </CardContent>
-            <CardFooter>
-              <Button variant="outline" className="w-full">
-                Add Condition
-              </Button>
-            </CardFooter>
           </Card>
 
           <Card>
@@ -265,11 +323,6 @@ export default function Profile() {
                 <p className="text-[#A1A1A1]">No allergies recorded.</p>
               )}
             </CardContent>
-            <CardFooter>
-              <Button variant="outline" className="w-full">
-                Add Allergy
-              </Button>
-            </CardFooter>
           </Card>
 
           <Card>
@@ -290,16 +343,18 @@ export default function Profile() {
                 <p className="text-[#A1A1A1]">No medications recorded.</p>
               )}
             </CardContent>
-            <CardFooter>
-              <Button variant="outline" className="w-full">
-                Add Medication
-              </Button>
-            </CardFooter>
           </Card>
 
-          <Button variant="primary" className="w-full">
+          <Button variant="primary" className="w-full" onClick={() => setIsMedicalFormOpen(true)}>
             Update Medical History
           </Button>
+
+          <MedicalFormModal
+            isOpen={isMedicalFormOpen}
+            onClose={() => setIsMedicalFormOpen(false)}
+            onSave={handleUpdateMedicalHistory}
+            initialData={profileData.medicalHistory}
+          />
         </>
       )}
     </div>

@@ -1,18 +1,25 @@
-"use client"
-
 import { useState, useEffect } from "react"
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card"
 import { Button } from "../components/ui/button"
 import { Badge } from "../components/ui/badge"
 import { Progress } from "../components/ui/progress"
 import { Footprints, Award, Users } from "lucide-react"
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 import confetti from "canvas-confetti"
 
 // Dummy data for demonstration
 const stepData = {
   today: 8432,
-  goal: 8435,
-  week: [6543, 7821, 9432, 5678, 8432, 10234, 8432],
+  goal: 10000,
+  week: [
+    { day: "Mon", steps: 6543 },
+    { day: "Tue", steps: 7821 },
+    { day: "Wed", steps: 9432 },
+    { day: "Thu", steps: 5678 },
+    { day: "Fri", steps: 8432 },
+    { day: "Sat", steps: 10234 },
+    { day: "Sun", steps: 8432 },
+  ],
   friends: [
     { name: "Emma", steps: 12453, avatar: "E" },
     { name: "John", steps: 9876, avatar: "J" },
@@ -25,6 +32,18 @@ export default function StepTracker() {
   const [currentSteps, setCurrentSteps] = useState(stepData.today)
   const [selectedDate, setSelectedDate] = useState("Today")
   const [goalReached, setGoalReached] = useState(false)
+
+  // Custom tooltip component for charts
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-[#2A2D3A] p-2 rounded-md border border-[#16A34A]/30">
+          <p className="text-[#E4E4E4]">{`${label}: ${payload[0].value.toLocaleString()} steps`}</p>
+        </div>
+      )
+    }
+    return null
+  }
 
   // Simulate step count increasing in real-time
   useEffect(() => {
@@ -110,23 +129,15 @@ export default function StepTracker() {
           <CardTitle>Weekly Progress</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-end justify-between h-40 gap-1">
-            {stepData.week.map((day, index) => {
-              const percentage = (day / stepData.goal) * 100
-              const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-
-              return (
-                <div key={index} className="flex flex-col items-center flex-1">
-                  <div className="w-full bg-[#2A2D3A] rounded-t-md relative h-full flex items-end">
-                    <div
-                      className={`w-full rounded-t-md ${day >= stepData.goal ? "bg-[#16A34A]" : "bg-[#06B6D4]"}`}
-                      style={{ height: `${percentage}%` }}
-                    ></div>
-                  </div>
-                  <p className="text-xs mt-1 text-[#A1A1A1]">{dayNames[index]}</p>
-                </div>
-              )
-            })}
+          <div className="h-[250px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={stepData.week}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#2A2D3A" />
+                <XAxis dataKey="day" stroke="#A1A1A1" />
+                <Tooltip content={<CustomTooltip />} />
+                <Bar dataKey="steps" fill="#06B6D4" radius={[4, 4, 0, 0]} barSize={30} />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </CardContent>
       </Card>
@@ -157,7 +168,7 @@ export default function StepTracker() {
           <div className="flex items-center justify-between mt-4 pt-4 border-t border-[#2A2D3A]">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-full bg-[#16A34A] flex items-center justify-center text-sm font-medium">
-                A
+                V
               </div>
               <div>
                 <p className="font-medium">You</p>

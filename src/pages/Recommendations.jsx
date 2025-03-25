@@ -1,10 +1,9 @@
-"use client"
-
 import { useState } from "react"
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "../components/ui/card"
 import { Button } from "../components/ui/button"
 import { Badge } from "../components/ui/badge"
 import { Utensils, Dumbbell, SpaceIcon as Yoga, Apple, Beef, Fish, Carrot, Egg } from "lucide-react"
+import { ExerciseModal } from "../components/ExerciseModal"
 
 // Dummy data for demonstration
 const recommendationData = {
@@ -42,28 +41,44 @@ const recommendationData = {
   },
   exercise: {
     cardio: [
-      { name: "Brisk walking", duration: "30 mins", calories: 150 },
-      { name: "Cycling", duration: "20 mins", calories: 200 },
+      { name: "Brisk walking", duration: "30 mins", calories: 150, gifUrl: "/exercise-walking.gif" },
+      { name: "Cycling", duration: "20 mins", calories: 200, gifUrl: "/exercise-cycling.gif" },
     ],
     strength: [
-      { name: "Push-ups", sets: 3, reps: 12 },
-      { name: "Squats", sets: 3, reps: 15 },
-      { name: "Planks", sets: 3, duration: "30 secs" },
+      { name: "Push-ups", sets: 3, reps: 12, gifUrl: "/exercise-pushups.gif" },
+      { name: "Squats", sets: 3, reps: 15, gifUrl: "/gif/bearSquat.gif" },
+      { name: "Planks", sets: 3, duration: "30 secs", gifUrl: "/exercise-planks.gif" },
     ],
     yoga: [
-      { name: "Sun Salutation", duration: "10 mins" },
-      { name: "Warrior Pose", duration: "5 mins" },
+      { name: "Sun Salutation", duration: "10 mins", gifUrl: "/yoga-sun-salutation.gif" },
+      { name: "Warrior Pose", duration: "5 mins", gifUrl: "/yoga-warrior.gif" },
+      { name: "Child's Pose", duration: "5 mins", gifUrl: "/yoga-child-pose.gif" },
     ],
   },
 }
 
-export default function Recommendations() {
+export default function Recommendation() {
   const [activeTab, setActiveTab] = useState("diet")
   const [mealLogged, setMealLogged] = useState(false)
+  const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false)
+  const [isYogaModalOpen, setIsYogaModalOpen] = useState(false)
+  const [selectedExercise, setSelectedExercise] = useState(null)
 
   const handleLogMeal = () => {
     setMealLogged(true)
     setTimeout(() => setMealLogged(false), 3000)
+  }
+
+  const handleViewExercise = (exercise) => {
+    setSelectedExercise(exercise)
+  }
+
+  const handleStartWorkout = () => {
+    setIsExerciseModalOpen(true)
+  }
+
+  const handleStartYoga = () => {
+    setIsYogaModalOpen(true)
   }
 
   return (
@@ -206,7 +221,12 @@ export default function Recommendations() {
                         <p className="font-medium">{exercise.name}</p>
                         <p className="text-sm text-[#A1A1A1]">{exercise.duration}</p>
                       </div>
-                      <Badge variant="default">{exercise.calories} kcal</Badge>
+                      <div className="flex gap-2">
+                        <Badge variant="default">{exercise.calories} kcal</Badge>
+                        <Button variant="outline" size="sm" onClick={() => handleViewExercise(exercise)}>
+                          View
+                        </Button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -228,8 +248,8 @@ export default function Recommendations() {
                           {exercise.sets} sets × {exercise.reps || exercise.duration}
                         </p>
                       </div>
-                      <Button variant="outline" size="sm">
-                        Log
+                      <Button variant="outline" size="sm" onClick={() => handleViewExercise(exercise)}>
+                        View
                       </Button>
                     </div>
                   ))}
@@ -237,11 +257,19 @@ export default function Recommendations() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button variant="primary" className="w-full">
+              <Button variant="primary" className="w-full" onClick={handleStartWorkout}>
                 Start Workout
               </Button>
             </CardFooter>
           </Card>
+
+          {/* Exercise Modal */}
+          <ExerciseModal
+            isOpen={isExerciseModalOpen}
+            onClose={() => setIsExerciseModalOpen(false)}
+            exercises={[...recommendationData.exercise.cardio, ...recommendationData.exercise.strength]}
+            type="Exercise"
+          />
         </>
       )}
 
@@ -264,7 +292,7 @@ export default function Recommendations() {
                       <p className="font-medium">{pose.name}</p>
                       <p className="text-sm text-[#A1A1A1]">{pose.duration}</p>
                     </div>
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" onClick={() => handleViewExercise(pose)}>
                       View
                     </Button>
                   </div>
@@ -272,7 +300,7 @@ export default function Recommendations() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button variant="primary" className="w-full">
+              <Button variant="primary" className="w-full" onClick={handleStartYoga}>
                 Start Yoga Session
               </Button>
             </CardFooter>
@@ -291,7 +319,25 @@ export default function Recommendations() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Yoga Modal */}
+          <ExerciseModal
+            isOpen={isYogaModalOpen}
+            onClose={() => setIsYogaModalOpen(false)}
+            exercises={recommendationData.exercise.yoga}
+            type="Yoga"
+          />
         </>
+      )}
+
+      {/* Individual Exercise/Yoga View Modal */}
+      {selectedExercise && (
+        <ExerciseModal
+          isOpen={!!selectedExercise}
+          onClose={() => setSelectedExercise(null)}
+          exercises={[selectedExercise]}
+          type={selectedExercise.name.includes("Pose") ? "Yoga" : "Exercise"}
+        />
       )}
     </div>
   )

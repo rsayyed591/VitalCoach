@@ -257,8 +257,8 @@ export default function ChatArogya() {
                   className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"} items-start gap-2`}
                 >
                   {message.sender === "bot" && (
-                    <div className="relative w-8 h-8 rounded-full bg-[#16A34A]/20 flex items-center justify-center">
-                      <Heart className="w-4 h-4 text-[#16A34A]" />
+                    <div className="relative w-4 h-4 rounded-full bg-[#16A34A]/20 flex items-center justify-center">
+                      <Heart className="w-2 h-2 text-[#16A34A]" />
                     </div>
                   )}
                   <div
@@ -339,18 +339,18 @@ export default function ChatArogya() {
           <button
             onClick={toggleChat}
             className={`bg-[#16A34A] text-white rounded-full shadow-lg hover:bg-[#16A34A]/80 focus:outline-none focus:ring-1 focus:ring-[#16A34A] transition-all duration-300 ease-in-out ${
-              isExpanded ? "px-4 py-3" : "p-3"
+              isExpanded ? "px-2 py-1" : "p-2"
             }`}
             aria-label="Open chat"
           >
             <div className="flex items-center z-30">
-              <Heart size={24} className={isExpanded ? "mr-2" : ""} />
+              <Heart size={18} className={isExpanded ? "mr-2" : ""} />
               <span
                 className={`whitespace-nowrap overflow-hidden transition-all duration-300 ease-in-out ${
-                  isExpanded ? "max-w-[200px] opacity-100" : "max-w-0 opacity-0"
+                  isExpanded ? "max-w-[100px] opacity-100" : "max-w-0 opacity-0"
                 }`}
               >
-                Chat with ArogyaBot
+                ArogyaBot
               </span>
             </div>
           </button>
