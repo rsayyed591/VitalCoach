@@ -13,7 +13,7 @@ export function MobileNav({ navItems }) {
   const toggleShowMore = useCallback(() => setShowMore((prev) => !prev), []);
 
   return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 border-t border-[#2A2D3A] bg-[#1E1E1E] z-50">
+    <div className="fixed bottom-0 left-0 right-0 border-t border-[#2A2D3A] bg-[#1E1E1E] z-50">
       <nav className="flex items-center justify-around">
         {mainNavItems.map((item) => {
           const isActive = pathname === item.href;
