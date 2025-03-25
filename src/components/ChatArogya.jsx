@@ -2,26 +2,27 @@ import { useState, useEffect, useRef } from "react"
 import { X, Send, Mic, Copy, RotateCcw, Heart } from 'lucide-react'
 import axios from 'axios'
 
-const ngrok_url_m = "your_ngrok_url_here"
-const mToken = "your_token_here"
+const ngrok_url_m = "https://8b44-206-84-234-161.ngrok-free.app"
 
-const apim = axios.create({
-  baseURL: `${ngrok_url_m}/`,
-})
+// const apim = axios.create({
+//   baseURL: `${ngrok_url_m}/`,
+// })
 
 // Function to send chat message to the backend
-const sendChatMessage = async (message) => {
-  const messageData = { message }
+const sendChatMessage = async (question) => {
+  const messageData = { question }
   try {
-    const response = await apim.post("/query", messageData, {
+    const response = await axios.post(`${ngrok_url_m}/query`, messageData, {
       headers: {
-        Authorization: `Bearer ${mToken}`,
+        // Authorization: `Bearer ${mToken}`,
         "Content-Type": "application/json",
       },
     })
-    return response.data.reply
+    console.log("Response", response.data.response)
+    return response.data.response
   } catch (error) {
-    throw new Error("Error communicating with the server")
+    console.error("API Error:", error.response?.data || error.message)
+    throw new Error(error.response?.data?.message || "Error communicating with the server")
   }
 }
 
