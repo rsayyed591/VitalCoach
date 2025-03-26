@@ -1,20 +1,18 @@
+"use client"
+
 import { useState, useEffect, useRef } from "react"
-import { X, Send, Mic, Copy, RotateCcw, Heart } from 'lucide-react'
-import axios from 'axios'
+import { X, Send, Mic, Copy, RotateCcw, Heart, Bot, UserIcon } from "lucide-react"
+import axios from "axios"
+import { motion, AnimatePresence } from "framer-motion"
 
-const ngrok_url_m = "https://8b44-206-84-234-161.ngrok-free.app"
-
-// const apim = axios.create({
-//   baseURL: `${ngrok_url_m}/`,
-// })
+const ngrok_url = "https://b05f-206-84-234-161.ngrok-free.app"
 
 // Function to send chat message to the backend
 const sendChatMessage = async (question) => {
   const messageData = { question }
   try {
-    const response = await axios.post(`${ngrok_url_m}/query`, messageData, {
+    const response = await axios.post(`${ngrok_url}/query`, messageData, {
       headers: {
-        // Authorization: `Bearer ${mToken}`,
         "Content-Type": "application/json",
       },
     })
@@ -26,6 +24,76 @@ const sendChatMessage = async (question) => {
   }
 }
 
+// Component for typing animation
+const TypingAnimation = ({ text }) => {
+  const [displayedText, setDisplayedText] = useState("")
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [currentLine, setCurrentLine] = useState(0)
+
+  // Split text into paragraphs/lines
+  const lines = text.split("\n").filter((line) => line.trim() !== "")
+
+  useEffect(() => {
+    if (currentLine >= lines.length) return
+
+    const currentLineText = lines[currentLine]
+
+    if (currentIndex < currentLineText.length) {
+      const timeout = setTimeout(() => {
+        setDisplayedText((prev) => prev + currentLineText[currentIndex])
+        setCurrentIndex((prev) => prev + 1)
+      }, 15) // Speed of typing
+
+      return () => clearTimeout(timeout)
+    } else {
+      // Move to next line
+      if (currentLine < lines.length - 1) {
+        const timeout = setTimeout(() => {
+          setDisplayedText((prev) => prev + "\n")
+          setCurrentLine((prev) => prev + 1)
+          setCurrentIndex(0)
+        }, 300) // Pause between lines
+
+        return () => clearTimeout(timeout)
+      }
+    }
+  }, [currentIndex, currentLine, lines])
+
+  // Format the displayed text with line breaks
+  const formattedText = displayedText.split("\n").map((line, i) => (
+    <span key={i}>
+      {line}
+      {i < displayedText.split("\n").length - 1 && <br />}
+    </span>
+  ))
+
+  return <>{formattedText}</>
+}
+
+// Loading indicator component
+const LoadingIndicator = () => {
+  const [dots, setDots] = useState("")
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDots((prev) => (prev.length >= 3 ? "" : prev + "."))
+    }, 400)
+
+    return () => clearInterval(interval)
+  }, [])
+
+  return (
+    <div className="flex items-center gap-2 text-[#E4E4E4] p-3 bg-[#2A2D3A] rounded-lg max-w-[70%]">
+      <div className="relative w-6 h-6 rounded-full bg-[#16A34A]/20 flex items-center justify-center">
+        <Bot className="w-3 h-3 text-[#16A34A]" />
+      </div>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="font-medium">
+        Generating response{dots}
+      </motion.div>
+    </div>
+  )
+}
+
 export default function ChatArogya() {
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState([])
@@ -35,6 +103,7 @@ export default function ChatArogya() {
   const [isExpanded, setIsExpanded] = useState(false)
   const [isListening, setIsListening] = useState(false)
   const [isSpeaking, setIsSpeaking] = useState(false)
+  const [typingComplete, setTypingComplete] = useState({})
 
   // Add refs for speech APIs
   const speechRecognitionRef = useRef(null)
@@ -47,16 +116,16 @@ export default function ChatArogya() {
   // Initialize browser APIs safely
   useEffect(() => {
     // Only run on client side
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
-      
+
       if (SpeechRecognition) {
         speechRecognitionRef.current = new SpeechRecognition()
         speechRecognitionRef.current.continuous = false
         speechRecognitionRef.current.interimResults = true
         speechRecognitionRef.current.lang = "en-US"
       }
-      
+
       synthesisRef.current = window.speechSynthesis
     }
   }, [])
@@ -94,6 +163,7 @@ export default function ChatArogya() {
           {
             text: "Hello! I'm ArogyaBot, your personal Ayurvedic wellness assistant. I can help you understand holistic health practices and provide guidance on natural remedies. How can I support your wellness journey today?",
             sender: "bot",
+            id: Date.now(),
           },
         ])
       }
@@ -122,13 +192,15 @@ export default function ChatArogya() {
   const handleSendMessage = async (e) => {
     e.preventDefault()
     if (inputMessage.trim() && !isLoading) {
-      const userMessage = { text: inputMessage, sender: "user" }
+      const userMessageId = Date.now()
+      const userMessage = { text: inputMessage, sender: "user", id: userMessageId }
       setMessages((prevMessages) => [...prevMessages, userMessage])
       setInputMessage("")
 
       try {
         const botResponse = await sendMessageToBackend(inputMessage)
-        setMessages((prevMessages) => [...prevMessages, { text: botResponse, sender: "bot" }])
+        const botMessageId = Date.now()
+        setMessages((prevMessages) => [...prevMessages, { text: botResponse, sender: "bot", id: botMessageId }])
       } catch (error) {
         setError(error.message)
       }
@@ -150,7 +222,7 @@ export default function ChatArogya() {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [messages])
+  }, [messages, typingComplete])
 
   const handleCopyMessage = (text) => {
     navigator.clipboard.writeText(text)
@@ -233,7 +305,11 @@ export default function ChatArogya() {
 
   // Helper function to conditionally join classNames
   const cn = (...classes) => {
-    return classes.filter(Boolean).join(' ')
+    return classes.filter(Boolean).join(" ")
+  }
+
+  const handleTypingComplete = (id) => {
+    setTypingComplete((prev) => ({ ...prev, [id]: true }))
   }
 
   return (
@@ -241,72 +317,104 @@ export default function ChatArogya() {
       {isOpen && <div className="fixed inset-0 bg-black bg-opacity-50 z-40" onClick={toggleChat} />}
       <div className="fixed bottom-20 right-4 z-50">
         {isOpen ? (
-          <div
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
             ref={chatRef}
             className="bg-[#1E1E1E] border border-[#2A2D3A] shadow-xl flex flex-col w-full sm:w-[450px] h-[70vh] max-h-[760px] rounded-lg overflow-hidden"
           >
-            <div className="bg-[#16A34A] text-white p-4 flex justify-between items-center">
-              <h2 className="text-lg font-semibold">ArogyaBot</h2>
-              <button onClick={toggleChat} className="text-white hover:text-gray-200" aria-label="Close chat">
+            <div className="bg-gradient-to-r from-[#16A34A] to-[#16A34A]/80 text-white p-4 flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <div className="relative w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                  <Heart className="w-4 h-4 text-white" />
+                </div>
+                <h2 className="text-lg font-semibold">ArogyaBot</h2>
+              </div>
+              <button
+                onClick={toggleChat}
+                className="text-white hover:text-gray-200 p-1 hover:bg-white/10 rounded-full transition-colors"
+                aria-label="Close chat"
+              >
                 <X size={20} />
               </button>
             </div>
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
-              {messages.map((message, index) => (
-                <div
-                  key={index}
-                  className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"} items-start gap-2`}
-                >
-                  {message.sender === "bot" && (
-                    <div className="relative w-4 h-4 rounded-full bg-[#16A34A]/20 flex items-center justify-center">
-                      <Heart className="w-2 h-2 text-[#16A34A]" />
-                    </div>
-                  )}
-                  <div
-                    className={`max-w-[70%] rounded-lg p-3 ${
-                      message.sender === "user" 
-                        ? "bg-[#16A34A] text-white" 
-                        : "bg-[#2A2D3A] text-[#E4E4E4]"
-                    }`}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-[#1A1A1A]">
+              <AnimatePresence>
+                {messages.map((message) => (
+                  <motion.div
+                    key={message.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"} items-start gap-2`}
                   >
-                    {message.text}
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <button
-                      onClick={() =>
-                        message.sender === "user" ? handleRetry(message.text) : handleCopyMessage(message.text)
-                      }
-                      className="p-1 hover:bg-[#2A2D3A] rounded-full transition-colors"
-                      aria-label={message.sender === "user" ? "Retry message" : "Copy message"}
+                    {message.sender === "bot" && (
+                      <div className="relative w-8 h-8 rounded-full bg-[#16A34A]/20 flex items-center justify-center flex-shrink-0 mt-1">
+                        <Bot className="w-4 h-4 text-[#16A34A]" />
+                      </div>
+                    )}
+                    <div
+                      className={`max-w-[75%] rounded-lg p-3 ${
+                        message.sender === "user" ? "bg-[#16A34A] text-white" : "bg-[#2A2D3A] text-[#E4E4E4]"
+                      }`}
                     >
-                      {message.sender === "user" ? (
-                        <RotateCcw className="w-4 h-4 text-[#A1A1A1]" />
+                      {message.sender === "bot" ? (
+                        <TypingAnimation text={message.text} onComplete={() => handleTypingComplete(message.id)} />
                       ) : (
-                        <Copy className="w-4 h-4 text-[#A1A1A1]" />
+                        message.text
                       )}
-                    </button>
-                    <button
-                      onClick={() => toggleSpeakMessage(message.text)}
-                      className={cn(
-                        "p-1 hover:bg-[#2A2D3A] rounded-full transition-colors",
-                        isSpeaking && "text-[#16A34A] animate-pulse"
-                      )}
-                      aria-label="Speak message"
-                    >
-                      <Mic className="w-4 h-4 text-[#A1A1A1]" />
-                    </button>
-                  </div>
-                </div>
-              ))}
-              {error && <div className="text-[#FF4D4D] text-center">{error}</div>}
-              {isLoading && (
-                <div className="text-center">
-                  <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#16A34A]"></div>
-                </div>
+                    </div>
+                    {message.sender === "user" && (
+                      <div className="relative w-8 h-8 rounded-full bg-[#2A2D3A] flex items-center justify-center flex-shrink-0 mt-1">
+                        <UserIcon className="w-4 h-4 text-[#A1A1A1]" />
+                      </div>
+                    )}
+                    <div className="flex flex-col gap-1">
+                      <button
+                        onClick={() =>
+                          message.sender === "user" ? handleRetry(message.text) : handleCopyMessage(message.text)
+                        }
+                        className="p-1 hover:bg-[#2A2D3A] rounded-full transition-colors"
+                        aria-label={message.sender === "user" ? "Retry message" : "Copy message"}
+                      >
+                        {message.sender === "user" ? (
+                          <RotateCcw className="w-4 h-4 text-[#A1A1A1]" />
+                        ) : (
+                          <Copy className="w-4 h-4 text-[#A1A1A1]" />
+                        )}
+                      </button>
+                      <button
+                        onClick={() => toggleSpeakMessage(message.text)}
+                        className={cn(
+                          "p-1 hover:bg-[#2A2D3A] rounded-full transition-colors",
+                          isSpeaking && "text-[#16A34A] animate-pulse",
+                        )}
+                        aria-label="Speak message"
+                      >
+                        <Mic className="w-4 h-4 text-[#A1A1A1]" />
+                      </button>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-[#FF4D4D] text-center bg-[#FF4D4D]/10 p-2 rounded-lg"
+                >
+                  {error}
+                </motion.div>
               )}
+
+              {isLoading && <LoadingIndicator />}
+
               <div ref={messagesEndRef} />
             </div>
-            <form onSubmit={handleSendMessage} className="border-t border-[#2A2D3A] p-4 flex gap-2">
+            <form onSubmit={handleSendMessage} className="border-t border-[#2A2D3A] p-4 flex gap-2 bg-[#1E1E1E]">
               <input
                 type="text"
                 value={inputMessage}
@@ -320,7 +428,7 @@ export default function ChatArogya() {
                 onClick={toggleMicInput}
                 className={cn(
                   "p-2 rounded-lg hover:bg-[#2A2D3A] transition-colors",
-                  isListening && "text-[#16A34A] animate-pulse"
+                  isListening && "text-[#16A34A] animate-pulse",
                 )}
                 aria-label="Toggle microphone"
               >
@@ -328,24 +436,28 @@ export default function ChatArogya() {
               </button>
               <button
                 type="submit"
-                className="bg-[#16A34A] text-white rounded-lg px-4 py-2 hover:bg-[#16A34A]/80 focus:outline-none focus:ring-1 focus:ring-[#16A34A] disabled:opacity-50"
+                className="bg-[#16A34A] text-white rounded-lg px-4 py-2 hover:bg-[#16A34A]/80 focus:outline-none focus:ring-1 focus:ring-[#16A34A] disabled:opacity-50 transition-colors"
                 aria-label="Send message"
                 disabled={isLoading}
               >
                 <Send size={20} />
               </button>
             </form>
-          </div>
+          </motion.div>
         ) : (
-          <button
+          <motion.button
+            initial={{ scale: 0.9 }}
+            animate={{ scale: 1 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={toggleChat}
-            className={`bg-[#16A34A] text-white rounded-full shadow-lg hover:bg-[#16A34A]/80 focus:outline-none focus:ring-1 focus:ring-[#16A34A] transition-all duration-300 ease-in-out ${
-              isExpanded ? "px-2 py-1" : "p-2"
+            className={`bg-gradient-to-r from-[#16A34A] to-[#16A34A]/80 text-white rounded-full shadow-lg hover:shadow-[#16A34A]/20 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-[#16A34A] focus:ring-offset-2 focus:ring-offset-[#121212] transition-all duration-300 ease-in-out ${
+              isExpanded ? "px-4 py-2" : "p-3"
             }`}
             aria-label="Open chat"
           >
             <div className="flex items-center z-30">
-              <Heart size={18} className={isExpanded ? "mr-2" : ""} />
+              <Heart size={isExpanded ? 18 : 20} className={isExpanded ? "mr-2" : ""} />
               <span
                 className={`whitespace-nowrap overflow-hidden transition-all duration-300 ease-in-out ${
                   isExpanded ? "max-w-[100px] opacity-100" : "max-w-0 opacity-0"
@@ -354,9 +466,10 @@ export default function ChatArogya() {
                 ArogyaBot
               </span>
             </div>
-          </button>
+          </motion.button>
         )}
       </div>
     </>
   )
 }
+
