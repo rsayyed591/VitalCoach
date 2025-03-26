@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useEffect } from "react"
 import { Link, useLocation } from "react-router-dom"
 import { Home, Activity, Heart, User, BarChart2, MoreHorizontal } from "lucide-react"

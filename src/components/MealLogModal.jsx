@@ -1,5 +1,3 @@
-"use client"
-
 import { useState } from "react"
 import { Dialog } from "./ui/dialog"
 import { Button } from "./ui/button"

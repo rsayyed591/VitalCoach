@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useEffect, useRef } from "react"
 import { X, Send, Mic, Copy, RotateCcw, Heart, Bot, UserIcon } from "lucide-react"
 import axios from "axios"
