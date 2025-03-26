@@ -5,7 +5,7 @@ import { X, Send, Mic, Copy, RotateCcw, Heart, Bot, UserIcon } from "lucide-reac
 import axios from "axios"
 import { motion, AnimatePresence } from "framer-motion"
 
-const ngrok_url = "https://b05f-206-84-234-161.ngrok-free.app"
+const ngrok_url = "https://7d8e-206-84-234-172.ngrok-free.app"
 
 // Function to send chat message to the backend
 const sendChatMessage = async (question) => {

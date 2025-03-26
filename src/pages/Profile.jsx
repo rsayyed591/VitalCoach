@@ -308,19 +308,19 @@ export default function Profile() {
                     <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-1">
                       <p className="text-[#A1A1A1] text-sm flex items-center">
                         <span className="w-16">Age:</span>
-                        <span className="font-medium text-white">{profileData.age} years</span>
+                        <span className="font-medium text-white">{profileData.age}Y</span>
                       </p>
                       <p className="text-[#A1A1A1] text-sm flex items-center">
                         <span className="w-16">Height:</span>
-                        <span className="font-medium text-white">{profileData.height} cm</span>
+                        <span className="font-medium text-white">{profileData.height}cm</span>
                       </p>
                       <p className="text-[#A1A1A1] text-sm flex items-center">
                         <span className="w-16">Weight:</span>
-                        <span className="font-medium text-white">{profileData.weight} kg</span>
+                        <span className="font-medium text-white">{profileData.weight}kg</span>
                       </p>
                       <p className="text-[#A1A1A1] text-sm flex items-center">
                         <span className="w-16">Streak:</span>
-                        <span className="font-medium text-white">{streakCount} days</span>
+                        <span className="font-medium text-white">{streakCount}D</span>
                       </p>
                     </div>
                   </div>

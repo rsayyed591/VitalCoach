@@ -51,7 +51,6 @@ const recommendationData = {
     strength: [
       { name: "Push-ups", sets: 3, reps: 12, gifUrl: "/gif/exercise/pushUps.gif" },
       { name: "Squats", sets: 3, reps: 15, gifUrl: "/gif/exercise/bearSquat.gif" },
-      { name: "Dumbbell", sets: 3, reps: 15, gifUrl: "/gif/exercise/dumbbellTricepsKickback.gif" },
     ],
     yoga: [
       { name: "TadaSana", duration: "5 mins", gifUrl: "/gif/yoga/tadasana.gif" },
