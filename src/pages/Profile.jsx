@@ -1,3 +1,5 @@
+"use client"
+
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
@@ -324,58 +326,70 @@ export default function Profile() {
                     <MoreVertical className="w-5 h-5" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 bg-[#1E1E1E] border-[#2A2D3A] text-[#E4E4E4]">
+                <DropdownMenuContent align="end" className="w-56 bg-[#1E1E1E] border-[#2A2D3A] text-[#E4E4E4] z-50">
                   <DropdownMenuLabel>Account</DropdownMenuLabel>
                   <DropdownMenuSeparator className="bg-[#2A2D3A]" />
                   <DropdownMenuItem
                     onClick={() => setIsEditingProfile(true)}
-                    className="hover:bg-[#2A2D3A] cursor-pointer"
+                    className="hover:bg-[#2A2D3A] cursor-pointer flex items-center"
                   >
                     <User className="mr-2 h-4 w-4" />
                     <span>Edit Profile</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => setIsMedicalFormOpen(true)}
-                    className="hover:bg-[#2A2D3A] cursor-pointer"
+                    className="hover:bg-[#2A2D3A] cursor-pointer flex items-center"
                   >
                     <Heart className="mr-2 h-4 w-4" />
                     <span>Medical History</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => setIsSettingsOpen(true)}
-                    className="hover:bg-[#2A2D3A] cursor-pointer"
+                    className="hover:bg-[#2A2D3A] cursor-pointer flex items-center"
                   >
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Settings</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => setIsNoticesModalOpen(true)}
-                    className="hover:bg-[#2A2D3A] cursor-pointer"
+                    className="hover:bg-[#2A2D3A] cursor-pointer flex items-center"
                   >
                     <Bell className="mr-2 h-4 w-4" />
                     <span>Notices</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator className="bg-[#2A2D3A]" />
-                  <DropdownMenuItem onClick={handleOpenHelp} className="hover:bg-[#2A2D3A] cursor-pointer">
+                  <DropdownMenuItem
+                    onClick={handleOpenHelp}
+                    className="hover:bg-[#2A2D3A] cursor-pointer flex items-center"
+                  >
                     <HelpCircle className="mr-2 h-4 w-4" />
                     <span>Help & Support</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleOpenPrivacy} className="hover:bg-[#2A2D3A] cursor-pointer">
+                  <DropdownMenuItem
+                    onClick={handleOpenPrivacy}
+                    className="hover:bg-[#2A2D3A] cursor-pointer flex items-center"
+                  >
                     <Shield className="mr-2 h-4 w-4" />
                     <span>Privacy & Security</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleOpenDevices} className="hover:bg-[#2A2D3A] cursor-pointer">
+                  <DropdownMenuItem
+                    onClick={handleOpenDevices}
+                    className="hover:bg-[#2A2D3A] cursor-pointer flex items-center"
+                  >
                     <Smartphone className="mr-2 h-4 w-4" />
                     <span>Connected Devices</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleOpenExport} className="hover:bg-[#2A2D3A] cursor-pointer">
+                  <DropdownMenuItem
+                    onClick={handleOpenExport}
+                    className="hover:bg-[#2A2D3A] cursor-pointer flex items-center"
+                  >
                     <Download className="mr-2 h-4 w-4" />
                     <span>Export Data</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator className="bg-[#2A2D3A]" />
                   <DropdownMenuItem
                     onClick={handleSignOut}
-                    className="hover:bg-[#2A2D3A] text-[#FF4D4D] cursor-pointer"
+                    className="hover:bg-[#2A2D3A] text-[#FF4D4D] cursor-pointer flex items-center"
                   >
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Sign out</span>
@@ -389,7 +403,11 @@ export default function Profile() {
               {/* <div className="w-20 h-20 rounded-full bg-[#2A2D3A] flex items-center justify-center text-xl font-bold">
                 {profileData.name.charAt(0)}
               </div> */}
-              <img src="/pfp.png" alt="pfp" className="w-20 h-20 rounded-full bg-[#2A2D3A] flex items-center justify-center text-xl font-bold" />
+              <img
+                src="/pfp.png"
+                alt="pfp"
+                className="w-20 h-20 rounded-full bg-[#2A2D3A] flex items-center justify-center text-xl font-bold"
+              />
               <div className="ml-4 flex-1">
                 <div className="flex items-center justify-between">
                   <div>
@@ -397,19 +415,19 @@ export default function Profile() {
                     <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-1">
                       <p className="text-[#A1A1A1] text-sm flex items-center">
                         <span className="w-16">Age:</span>
-                        <span className="font-medium text-white">{profileData.age} years</span>
+                        <span className="font-medium text-white">{profileData.age}Y</span>
                       </p>
                       <p className="text-[#A1A1A1] text-sm flex items-center">
                         <span className="w-16">Height:</span>
-                        <span className="font-medium text-white">{profileData.height} cm</span>
+                        <span className="font-medium text-white">{profileData.height}cm</span>
                       </p>
                       <p className="text-[#A1A1A1] text-sm flex items-center">
                         <span className="w-16">Weight:</span>
-                        <span className="font-medium text-white">{profileData.weight} kg</span>
+                        <span className="font-medium text-white">{profileData.weight}kg</span>
                       </p>
                       <p className="text-[#A1A1A1] text-sm flex items-center">
                         <span className="w-16">Streak:</span>
-                        <span className="font-medium text-white">{streakCount} days</span>
+                        <span className="font-medium text-white">{streakCount}D</span>
                       </p>
                     </div>
                   </div>
@@ -604,6 +622,14 @@ export default function Profile() {
               </div>
             </CardContent>
           </Card>
+
+          <Button
+  variant="outline"
+  className="w-full mt-4 text-[#FF4D4D] border-[#FF4D4D]/20 hover:bg-[#FF4D4D]/10 flex items-center justify-center"
+  onClick={handleSignOut}
+>
+  <LogOut className="w-4 h-4 mr-2" /> Sign Out
+</Button>
         </>
       )}
 
