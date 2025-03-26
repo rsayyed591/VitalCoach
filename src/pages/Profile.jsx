@@ -1,10 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card"
-import { Button } from "../components/ui/button"
-import { Badge } from "../components/ui/badge"
-import { Progress } from "../components/ui/progress"
+import { useNavigate } from "react-router-dom"
+import { motion, AnimatePresence } from "framer-motion"
 import {
   Award,
   Calendar,
@@ -26,10 +24,17 @@ import {
   LogOut,
   User,
   FileText,
+  HelpCircle,
+  Shield,
+  Download,
+  Smartphone,
 } from "lucide-react"
+import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card"
+import { Button } from "../components/ui/button"
+import { Badge } from "../components/ui/badge"
+import { Progress } from "../components/ui/progress"
 import { MedicalFormModal } from "../components/MedicalFormModal"
-import { Dialog } from "../components/ui/dialog"
-import { motion, AnimatePresence } from "framer-motion"
+import { Dialog } from "../components/ui/modal2"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -94,6 +99,7 @@ const initialProfileData = {
 }
 
 export default function Profile() {
+  const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState("achievements")
   const [profileData, setProfileData] = useState(initialProfileData)
   const [isMedicalFormOpen, setIsMedicalFormOpen] = useState(false)
@@ -103,6 +109,10 @@ export default function Profile() {
   const [isEditingProfile, setIsEditingProfile] = useState(false)
   const [isPremiumModalOpen, setIsPremiumModalOpen] = useState(false)
   const [isNoticesModalOpen, setIsNoticesModalOpen] = useState(false)
+  const [isHelpModalOpen, setIsHelpModalOpen] = useState(false)
+  const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false)
+  const [isDevicesModalOpen, setIsDevicesModalOpen] = useState(false)
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false)
   const [editedProfile, setEditedProfile] = useState({
     name: initialProfileData.name,
     age: initialProfileData.age,
@@ -111,7 +121,10 @@ export default function Profile() {
     bio: "Fitness enthusiast focused on holistic health improvement.",
   })
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
-  const [navbarStyle, setNavbarStyle] = useState("icons-labels") // icons-only, icons-labels, minimal
+  const [navbarStyle, setNavbarStyle] = useState(() => {
+    return localStorage.getItem("navbarStyle") || "icons-labels"
+  })
+  const [isSigningOut, setIsSigningOut] = useState(false)
 
   // Hide chat bot when modal is open
   useEffect(() => {
@@ -123,7 +136,11 @@ export default function Profile() {
         showReward ||
         isPremiumModalOpen ||
         isSettingsOpen ||
-        isNoticesModalOpen
+        isNoticesModalOpen ||
+        isHelpModalOpen ||
+        isPrivacyModalOpen ||
+        isDevicesModalOpen ||
+        isExportModalOpen
       ) {
         chatBot.style.display = "none"
       } else {
@@ -136,7 +153,18 @@ export default function Profile() {
         chatBot.style.display = "block"
       }
     }
-  }, [isEditingProfile, isMedicalFormOpen, showReward, isPremiumModalOpen, isSettingsOpen, isNoticesModalOpen])
+  }, [
+    isEditingProfile,
+    isMedicalFormOpen,
+    showReward,
+    isPremiumModalOpen,
+    isSettingsOpen,
+    isNoticesModalOpen,
+    isHelpModalOpen,
+    isPrivacyModalOpen,
+    isDevicesModalOpen,
+    isExportModalOpen,
+  ])
 
   // Simulate dynamic streak and tokens
   useEffect(() => {
@@ -241,8 +269,38 @@ export default function Profile() {
 
   const handleChangeNavbarStyle = (style) => {
     setNavbarStyle(style)
+    localStorage.setItem("navbarStyle", style)
     setIsSettingsOpen(false)
-    // In a real app, you would save this preference to user settings
+  }
+
+  const handleSignOut = () => {
+    setIsSigningOut(true)
+
+    // Simulate sign out process
+    setTimeout(() => {
+      // Clear any stored user data
+      sessionStorage.clear()
+      localStorage.removeItem("user")
+
+      // Redirect to auth page
+      navigate("/auth")
+    }, 1500)
+  }
+
+  const handleOpenHelp = () => {
+    setIsHelpModalOpen(true)
+  }
+
+  const handleOpenPrivacy = () => {
+    setIsPrivacyModalOpen(true)
+  }
+
+  const handleOpenDevices = () => {
+    setIsDevicesModalOpen(true)
+  }
+
+  const handleOpenExport = () => {
+    setIsExportModalOpen(true)
   }
 
   return (
@@ -268,29 +326,61 @@ export default function Profile() {
                     <MoreVertical className="w-5 h-5" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuContent align="end" className="w-56 bg-[#1E1E1E] border-[#2A2D3A] text-[#E4E4E4]">
                   <DropdownMenuLabel>Account</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => setIsEditingProfile(true)}>
+                  <DropdownMenuSeparator className="bg-[#2A2D3A]" />
+                  <DropdownMenuItem
+                    onClick={() => setIsEditingProfile(true)}
+                    className="hover:bg-[#2A2D3A] cursor-pointer"
+                  >
                     <User className="mr-2 h-4 w-4" />
                     <span>Edit Profile</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setIsMedicalFormOpen(true)}>
+                  <DropdownMenuItem
+                    onClick={() => setIsMedicalFormOpen(true)}
+                    className="hover:bg-[#2A2D3A] cursor-pointer"
+                  >
                     <Heart className="mr-2 h-4 w-4" />
                     <span>Medical History</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setIsSettingsOpen(true)}>
+                  <DropdownMenuItem
+                    onClick={() => setIsSettingsOpen(true)}
+                    className="hover:bg-[#2A2D3A] cursor-pointer"
+                  >
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Settings</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setIsNoticesModalOpen(true)}>
+                  <DropdownMenuItem
+                    onClick={() => setIsNoticesModalOpen(true)}
+                    className="hover:bg-[#2A2D3A] cursor-pointer"
+                  >
                     <Bell className="mr-2 h-4 w-4" />
                     <span>Notices</span>
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
+                  <DropdownMenuSeparator className="bg-[#2A2D3A]" />
+                  <DropdownMenuItem onClick={handleOpenHelp} className="hover:bg-[#2A2D3A] cursor-pointer">
+                    <HelpCircle className="mr-2 h-4 w-4" />
+                    <span>Help & Support</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleOpenPrivacy} className="hover:bg-[#2A2D3A] cursor-pointer">
+                    <Shield className="mr-2 h-4 w-4" />
+                    <span>Privacy & Security</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleOpenDevices} className="hover:bg-[#2A2D3A] cursor-pointer">
+                    <Smartphone className="mr-2 h-4 w-4" />
+                    <span>Connected Devices</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleOpenExport} className="hover:bg-[#2A2D3A] cursor-pointer">
+                    <Download className="mr-2 h-4 w-4" />
+                    <span>Export Data</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="bg-[#2A2D3A]" />
+                  <DropdownMenuItem
+                    onClick={handleSignOut}
+                    className="hover:bg-[#2A2D3A] text-[#FF4D4D] cursor-pointer"
+                  >
                     <LogOut className="mr-2 h-4 w-4" />
-                    <span>Log out</span>
+                    <span>Sign out</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -298,9 +388,10 @@ export default function Profile() {
 
             {/* Profile Header */}
             <div className="flex items-center p-4 pt-6">
-              <div className="w-20 h-20 rounded-full bg-[#2A2D3A] flex items-center justify-center text-xl font-bold">
+              {/* <div className="w-20 h-20 rounded-full bg-[#2A2D3A] flex items-center justify-center text-xl font-bold">
                 {profileData.name.charAt(0)}
-              </div>
+              </div> */}
+              <img src="/pfp.png" alt="pfp" className="w-20 h-20 rounded-full bg-[#2A2D3A] flex items-center justify-center text-xl font-bold" />
               <div className="ml-4 flex-1">
                 <div className="flex items-center justify-between">
                   <div>
@@ -308,19 +399,19 @@ export default function Profile() {
                     <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-1">
                       <p className="text-[#A1A1A1] text-sm flex items-center">
                         <span className="w-16">Age:</span>
-                        <span className="font-medium text-white">{profileData.age}Y</span>
+                        <span className="font-medium text-white">{profileData.age} years</span>
                       </p>
                       <p className="text-[#A1A1A1] text-sm flex items-center">
                         <span className="w-16">Height:</span>
-                        <span className="font-medium text-white">{profileData.height}cm</span>
+                        <span className="font-medium text-white">{profileData.height} cm</span>
                       </p>
                       <p className="text-[#A1A1A1] text-sm flex items-center">
                         <span className="w-16">Weight:</span>
-                        <span className="font-medium text-white">{profileData.weight}kg</span>
+                        <span className="font-medium text-white">{profileData.weight} kg</span>
                       </p>
                       <p className="text-[#A1A1A1] text-sm flex items-center">
                         <span className="w-16">Streak:</span>
-                        <span className="font-medium text-white">{streakCount}D</span>
+                        <span className="font-medium text-white">{streakCount} days</span>
                       </p>
                     </div>
                   </div>
@@ -758,7 +849,7 @@ export default function Profile() {
           </div>
 
           <div className="pt-4">
-            <Button variant="outline" className="w-full">
+            <Button variant="outline" className="w-full" onClick={handleSignOut}>
               Sign Out
             </Button>
           </div>
@@ -813,6 +904,311 @@ export default function Profile() {
               </div>
             </div>
           </div>
+        </div>
+      </Dialog>
+
+      {/* Help & Support Modal */}
+      <Dialog isOpen={isHelpModalOpen} onClose={() => setIsHelpModalOpen(false)} title="Help & Support">
+        <div className="space-y-4">
+          <div className="bg-[#2A2D3A] rounded-lg p-4">
+            <h3 className="font-medium mb-2">Frequently Asked Questions</h3>
+            <div className="space-y-3">
+              <div>
+                <h4 className="text-sm font-medium">How do I track my steps?</h4>
+                <p className="text-xs text-[#A1A1A1] mt-1">
+                  Your steps are tracked automatically when you carry your phone with you. Make sure to enable motion
+                  permissions.
+                </p>
+              </div>
+              <div>
+                <h4 className="text-sm font-medium">How accurate is the sleep tracking?</h4>
+                <p className="text-xs text-[#A1A1A1] mt-1">
+                  Sleep tracking uses a combination of phone usage patterns and motion detection. For best results, keep
+                  your phone near your bed.
+                </p>
+              </div>
+              <div>
+                <h4 className="text-sm font-medium">Can I connect other fitness devices?</h4>
+                <p className="text-xs text-[#A1A1A1] mt-1">
+                  Yes, you can connect compatible fitness trackers and smartwatches in the Connected Devices section.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-[#2A2D3A] rounded-lg p-4">
+            <h3 className="font-medium mb-2">Contact Support</h3>
+            <p className="text-sm text-[#A1A1A1] mb-3">Need more help? Our support team is available 24/7.</p>
+            <Button variant="primary" className="w-full">
+              Contact Support
+            </Button>
+          </div>
+
+          <div className="bg-[#2A2D3A] rounded-lg p-4">
+            <h3 className="font-medium mb-2">App Information</h3>
+            <div className="space-y-1">
+              <p className="text-xs text-[#A1A1A1] flex justify-between">
+                <span>Version</span>
+                <span className="text-white">1.2.3</span>
+              </p>
+              <p className="text-xs text-[#A1A1A1] flex justify-between">
+                <span>Build</span>
+                <span className="text-white">2023.10.15</span>
+              </p>
+              <p className="text-xs text-[#A1A1A1] flex justify-between">
+                <span>Device ID</span>
+                <span className="text-white">ABCD1234</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </Dialog>
+
+      {/* Privacy & Security Modal */}
+      <Dialog isOpen={isPrivacyModalOpen} onClose={() => setIsPrivacyModalOpen(false)} title="Privacy & Security">
+        <div className="space-y-4">
+          <div className="bg-[#2A2D3A] rounded-lg p-4">
+            <h3 className="font-medium mb-2">Data Privacy</h3>
+            <p className="text-sm text-[#A1A1A1] mb-3">Control how your data is used and shared.</p>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-sm">Share Health Data</span>
+                <div className="w-10 h-5 bg-[#1E1E1E] rounded-full relative">
+                  <div className="absolute right-0.5 top-0.5 w-4 h-4 rounded-full bg-[#A1A1A1]"></div>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm">Allow Analytics</span>
+                <div className="w-10 h-5 bg-[#1E1E1E] rounded-full relative">
+                  <div className="absolute left-0.5 top-0.5 w-4 h-4 rounded-full bg-[#16A34A]"></div>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm">Personalized Ads</span>
+                <div className="w-10 h-5 bg-[#1E1E1E] rounded-full relative">
+                  <div className="absolute right-0.5 top-0.5 w-4 h-4 rounded-full bg-[#A1A1A1]"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-[#2A2D3A] rounded-lg p-4">
+            <h3 className="font-medium mb-2">Security</h3>
+            <div className="space-y-3">
+              <Button variant="outline" className="w-full justify-start">
+                <Shield className="w-4 h-4 mr-2" /> Change Password
+              </Button>
+              <Button variant="outline" className="w-full justify-start">
+                <Smartphone className="w-4 h-4 mr-2" /> Two-Factor Authentication
+              </Button>
+              <Button variant="outline" className="w-full justify-start">
+                <LogOut className="w-4 h-4 mr-2" /> Sign Out from All Devices
+              </Button>
+            </div>
+          </div>
+
+          <div className="bg-[#2A2D3A] rounded-lg p-4">
+            <h3 className="font-medium mb-2">Legal</h3>
+            <div className="space-y-2">
+              <Button variant="ghost" className="w-full justify-start p-0 h-auto hover:bg-transparent">
+                <span className="text-sm text-[#A1A1A1] hover:text-white transition-colors">Privacy Policy</span>
+              </Button>
+              <Button variant="ghost" className="w-full justify-start p-0 h-auto hover:bg-transparent">
+                <span className="text-sm text-[#A1A1A1] hover:text-white transition-colors">Terms of Service</span>
+              </Button>
+              <Button variant="ghost" className="w-full justify-start p-0 h-auto hover:bg-transparent">
+                <span className="text-sm text-[#A1A1A1] hover:text-white transition-colors">Data Deletion Request</span>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </Dialog>
+
+      {/* Connected Devices Modal */}
+      <Dialog isOpen={isDevicesModalOpen} onClose={() => setIsDevicesModalOpen(false)} title="Connected Devices">
+        <div className="space-y-4">
+          <div className="bg-[#2A2D3A] rounded-lg p-4">
+            <h3 className="font-medium mb-3">Current Device</h3>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-[#16A34A]/20 flex items-center justify-center">
+                <Smartphone className="w-5 h-5 text-[#16A34A]" />
+              </div>
+              <div>
+                <p className="text-sm font-medium">iPhone 13 Pro</p>
+                <p className="text-xs text-[#A1A1A1]">Last active: Just now</p>
+              </div>
+              <Badge className="ml-auto">Current</Badge>
+            </div>
+          </div>
+
+          <div className="bg-[#2A2D3A] rounded-lg p-4">
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="font-medium">Connected Wearables</h3>
+              <Button variant="outline" size="sm">
+                Add Device
+              </Button>
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#06B6D4]/20 flex items-center justify-center">
+                  <Award className="w-5 h-5 text-[#06B6D4]" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium">Fitbit Charge 5</p>
+                  <p className="text-xs text-[#A1A1A1]">Connected: Oct 15, 2023</p>
+                </div>
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                  <MoreVertical className="w-4 h-4" />
+                </Button>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#FF4D4D]/20 flex items-center justify-center">
+                  <Heart className="w-5 h-5 text-[#FF4D4D]" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium">Apple Watch Series 8</p>
+                  <p className="text-xs text-[#A1A1A1]">Connected: Sep 5, 2023</p>
+                </div>
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                  <MoreVertical className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-[#2A2D3A] rounded-lg p-4">
+            <h3 className="font-medium mb-2">Other Devices</h3>
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#A1A1A1]/20 flex items-center justify-center">
+                  <Smartphone className="w-5 h-5 text-[#A1A1A1]" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium">iPad Pro</p>
+                  <p className="text-xs text-[#A1A1A1]">Last active: 3 days ago</p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-[#FF4D4D] border-[#FF4D4D]/20 hover:bg-[#FF4D4D]/10"
+                >
+                  Sign Out
+                </Button>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#A1A1A1]/20 flex items-center justify-center">
+                  <Smartphone className="w-5 h-5 text-[#A1A1A1]" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium">MacBook Pro</p>
+                  <p className="text-xs text-[#A1A1A1]">Last active: 1 week ago</p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-[#FF4D4D] border-[#FF4D4D]/20 hover:bg-[#FF4D4D]/10"
+                >
+                  Sign Out
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Dialog>
+
+      {/* Export Data Modal */}
+      <Dialog isOpen={isExportModalOpen} onClose={() => setIsExportModalOpen(false)} title="Export Data">
+        <div className="space-y-4">
+          <div className="bg-[#2A2D3A] rounded-lg p-4">
+            <h3 className="font-medium mb-2">Export Options</h3>
+            <p className="text-sm text-[#A1A1A1] mb-3">Select the data you want to export and the format.</p>
+
+            <div className="space-y-2 mb-4">
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="health-data"
+                  className="rounded bg-[#1E1E1E] border-[#A1A1A1] text-[#16A34A]"
+                  defaultChecked
+                />
+                <label htmlFor="health-data" className="text-sm">
+                  Health Data
+                </label>
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="activity-logs"
+                  className="rounded bg-[#1E1E1E] border-[#A1A1A1] text-[#16A34A]"
+                  defaultChecked
+                />
+                <label htmlFor="activity-logs" className="text-sm">
+                  Activity Logs
+                </label>
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="achievements"
+                  className="rounded bg-[#1E1E1E] border-[#A1A1A1] text-[#16A34A]"
+                  defaultChecked
+                />
+                <label htmlFor="achievements" className="text-sm">
+                  Achievements
+                </label>
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="medical-history"
+                  className="rounded bg-[#1E1E1E] border-[#A1A1A1] text-[#16A34A]"
+                />
+                <label htmlFor="medical-history" className="text-sm">
+                  Medical History
+                </label>
+              </div>
+            </div>
+
+            <div className="space-y-2 mb-4">
+              <label className="text-sm block mb-1">Format</label>
+              <div className="flex gap-2">
+                <Button variant="outline" className="flex-1 bg-[#16A34A]/10 border-[#16A34A]">
+                  CSV
+                </Button>
+                <Button variant="outline" className="flex-1">
+                  JSON
+                </Button>
+                <Button variant="outline" className="flex-1">
+                  PDF
+                </Button>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm block mb-1">Date Range</label>
+              <div className="flex gap-2">
+                <Button variant="outline" className="flex-1 bg-[#16A34A]/10 border-[#16A34A]">
+                  All Time
+                </Button>
+                <Button variant="outline" className="flex-1">
+                  Last Month
+                </Button>
+                <Button variant="outline" className="flex-1">
+                  Custom
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <Button variant="primary" className="w-full">
+            <Download className="w-4 h-4 mr-2" /> Export Data
+          </Button>
+
+          <p className="text-xs text-[#A1A1A1] text-center">
+            Your data will be exported and sent to your registered email address.
+          </p>
         </div>
       </Dialog>
 
@@ -910,6 +1306,30 @@ export default function Profile() {
                   </Button>
                 </div>
               </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Sign Out Confirmation */}
+      <AnimatePresence>
+        {isSigningOut && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-[#1E1E1E] rounded-lg p-6 flex flex-col items-center max-w-xs mx-4"
+            >
+              <LogOut className="w-12 h-12 text-[#FF4D4D] mb-4" />
+              <h3 className="text-lg font-bold mb-2">Signing Out...</h3>
+              <p className="text-[#A1A1A1] text-center mb-4">Please wait while we securely sign you out.</p>
+              <div className="w-8 h-8 border-2 border-[#16A34A] border-t-transparent rounded-full animate-spin"></div>
             </motion.div>
           </motion.div>
         )}
