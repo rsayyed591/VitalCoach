@@ -6,7 +6,6 @@ import { Footprints, Award, Users, ChevronRight, Calendar, Clock, Flame, Zap } f
 import { BarChart, Bar, XAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 import confetti from "canvas-confetti"
 import { motion } from "framer-motion"
-import { vitalService } from "../services/api"
 
 // Dummy data for demonstration
 const stepData = {
@@ -80,24 +79,34 @@ export default function StepTracker() {
   }, [])
 
   useEffect(() => {
-      const fetchDashboardStats = async () => {
-        setLoading(true)
-        try {
-          const data = await vitalService.getDashboardStats()
-          console.log("Net", data)
-          setStats(data)
-        } catch (err) {
-          setError(err.message || "Failed to fetch dashboard stats")
-        } finally {
-          setLoading(false)
+    const fetchDashboardStats = async () => {
+      setLoading(true)
+      try {
+        // Comment out API call and use dummy data instead
+        // const data = await vitalService.getDashboardStats()
+        // console.log("Net", data)
+        const data = {
+          vitals: {
+            step_count: 8432,
+            calories_burned: 350,
+            blood_sugar: 98,
+          },
         }
+        setStats(data)
+      } catch (err) {
+        setError(err.message || "Failed to fetch dashboard stats")
+      } finally {
+        setLoading(false)
       }
-  
-      fetchDashboardStats()
-    }, [])
+    }
+
+    fetchDashboardStats()
+  }, [])
 
   // Calculate percentage of goal
-  const goalPercentage = stats.vitals ? Math.min(100, Math.round((stats.vitals.step_count / (stats.vitals.step_count + 100)) * 100)) : 0
+  const goalPercentage = stats.vitals
+    ? Math.min(100, Math.round((stats.vitals.step_count / (stats.vitals.step_count + 100)) * 100))
+    : 0
 
   // Calculate calories burned (rough estimate)
   const caloriesBurned = Math.round(currentSteps * 0.04)
@@ -214,41 +223,40 @@ export default function StepTracker() {
 
           {/* Stats Cards - Fixed to have same height */}
           <div className="grid grid-cols-3 gap-3 auto-rows-fr">
-  {[
-    {
-      icon: <Flame className="w-5 h-5 text-[#FF4D4D] mb-1" />,
-      label: "Calories",
-      value: stats.vitals.calories_burned,
-    },
-    {
-      icon: <Zap className="w-5 h-5 text-[#16A34A] mb-1" />,
-      label: "Distance",
-      value: `${distanceKm} km`,
-    },
-    {
-      icon: <Clock className="w-5 h-5 text-[#06B6D4] mb-1" />,
-      label: "Active Time",
-      value: `${Math.round(currentSteps / 1000)} min`,
-    },
-  ].map((item, index) => (
-    <motion.div
-      key={index}
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.3, delay: 0.1 * (index + 1) }}
-      className="h-full"
-    >
-      <Card className="h-full flex flex-col justify-between">
-        <CardContent className="p-3 flex flex-col items-center justify-center min-h-[100px]">
-          {item.icon}
-          <p className="text-xs text-[#A1A1A1]">{item.label}</p>
-          <p className="text-lg font-bold">{item.value}</p>
-        </CardContent>
-      </Card>
-    </motion.div>
-  ))}
-</div>
-
+            {[
+              {
+                icon: <Flame className="w-5 h-5 text-[#FF4D4D] mb-1" />,
+                label: "Calories",
+                value: stats.vitals.calories_burned,
+              },
+              {
+                icon: <Zap className="w-5 h-5 text-[#16A34A] mb-1" />,
+                label: "Distance",
+                value: `${distanceKm} km`,
+              },
+              {
+                icon: <Clock className="w-5 h-5 text-[#06B6D4] mb-1" />,
+                label: "Active Time",
+                value: `${Math.round(currentSteps / 1000)} min`,
+              },
+            ].map((item, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3, delay: 0.1 * (index + 1) }}
+                className="h-full"
+              >
+                <Card className="h-full flex flex-col justify-between">
+                  <CardContent className="p-3 flex flex-col items-center justify-center min-h-[100px]">
+                    {item.icon}
+                    <p className="text-xs text-[#A1A1A1]">{item.label}</p>
+                    <p className="text-lg font-bold">{item.value}</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
 
           {/* Weekly Progress */}
           <motion.div

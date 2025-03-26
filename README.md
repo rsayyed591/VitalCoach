@@ -1,32 +1,42 @@
-# VitalCoach - AI-Powered Personal Health Coach
+# 🏥 VitalCoach - AI-Powered Personal Health Coach  
 
-## 🚀 About the Project
+## 🚀 About the Project  
 
-**VitalCoach** is an AI-powered personal health coach designed to help patients with chronic conditions like diabetes and hypertension manage their health. It provides real-time insights, personalized recommendations, and progress tracking to improve patient adherence and reduce hospital visits.
+**VitalCoach** is an AI-powered personal health assistant designed to help individuals manage chronic conditions like diabetes and hypertension. It offers real-time health tracking, personalized recommendations, and progress insights to enhance patient well-being.  
 
-## 🏆 Hackathon Recognition
+---
 
-This project was developed for **Hack2Infinity: The Infinite AI Hackathon**, organized by **DMX and the Student Council** at **Rajiv Gandhi Institute of Technology**. Our team, **NoName.json**, was selected as a **finalist** in the competition!
+## 🏆 Hackathon Recognition  
 
-## 🔥 Features
+This project was built for **Hack2Infinity: The Infinite AI Hackathon**, an AI-focused competition organized by **DMX and the Student Council** at **Rajiv Gandhi Institute of Technology**.  
 
-- **Real-Time Health Monitoring**: Tracks step count, heart rate, glucose levels, and more.
-- **Personalized Recommendations**: AI-driven diet plans, exercise suggestions, and wellness tips.
-- **Goal Tracking & Incentives**: Set fitness goals and earn rewards upon completion.
-- **PWA Support**: Installable as a Progressive Web App (PWA) for seamless mobile experience.
-- **Profile & Achievements**: Track streaks, badges, and medical history.
+✨ **Team NoName.json** was selected as a **Finalist** in this prestigious event! 🏅  
 
-## 🛠️ Tech Stack
+---
 
-- **Frontend**: React, JSX, Tailwind CSS
-- **State Management**: Context API / Redux
-- **Backend**: Node.js (future scope)
-- **Database**: MongoDB (future scope)
-- **PWA**: Service Worker, Web App Manifest
+## 🔥 Features  
 
-## 📂 Project Directory Structure
+✅ **Real-Time Health Monitoring** – Track step count, heart rate, glucose levels, and more.  
+✅ **Personalized AI Recommendations** – Get AI-driven diet plans, exercise routines, and wellness tips.  
+✅ **Goal Tracking & Incentives** – Set fitness goals and earn rewards upon completion.  
+✅ **Progressive Web App (PWA) Support** – Installable as a **PWA** for a seamless mobile experience.  
+✅ **Achievements & Profile Management** – Track streaks, badges, and medical history.  
 
-```
+---
+
+## 🛠️ Tech Stack  
+
+- **Frontend**: React, JSX, Tailwind CSS  
+- **State Management**: Context API / Redux  
+- **Backend**: Node.js (future scope)  
+- **Database**: MongoDB (future scope)  
+- **PWA**: Service Worker, Web App Manifest  
+
+---
+
+## 📂 Project Directory Structure  
+
+```bash
 rsayyed591-vitalcoach/
 ├── README.md
 ├── eslint.config.js
@@ -74,45 +84,54 @@ rsayyed591-vitalcoach/
         └── api.js
 ```
 
-## 👥 Team - NoName.json
+## 👥 Team - NoName.json  
 
-- **Rehan Sayyed** - [GitHub](https://github.com/rsayyed591)
-- **Vivek Chouhan** - [GitHub](https://github.com/viv696969)
-- **Sanskruti Bansode** - [GitHub](https://github.com/sanskruti2003)
-- **Rahil Shaikh** - [GitHub](https://github.com/Rahil71)
-
-## 📸 Team Image
-![Team Image](public/team.jpg)
-
----
-
-### 📌 How to Run the Project
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/rsayyed591/vitalcoach.git
-   ```
-2. Navigate to the project folder:
-   ```bash
-   cd rsayyed591-vitalcoach
-   ```
-3. Install dependencies:
-   ```bash
-   npm install
-   ```
-4. Run the project:
-   ```bash
-   npm run dev
-   ```
-5. Open your browser and visit: `http://localhost:5173`
+| Name                | GitHub Profile |
+|---------------------|---------------|
+| **Rehan Sayyed**    | [@rsayyed591](https://github.com/rsayyed591) |
+| **Vivek Chouhan**   | [@viv696969](https://github.com/viv696969) |
+| **Sanskruti Bansode** | [@sanskruti2003](https://github.com/sanskruti2003) |
+| **Rahil Shaikh**    | [@Rahil71](https://github.com/Rahil71) |
 
 ---
 
-### 📜 License
+## 📸 Team Image  
 
-This project is open-source under the **MIT License**. Feel free to modify and use it.
+<p align="center">
+  <img src="public/team.jpg" alt="Team Image" width="750px">
+</p>
 
 ---
 
-📢 **For contributions or queries, reach out to us via GitHub!** 🚀
+## ⚡ How to Run the Project  
 
+1️⃣ **Clone the Repository:**  
+```bash
+git clone https://github.com/rsayyed591/vitalcoach.git
+```
+2️⃣ **Navigate to the Project Folder:**  
+```bash
+cd rsayyed591-vitalcoach
+```
+3️⃣ **Install Dependencies:**  
+```bash
+npm install
+```
+4️⃣ **Run the Development Server:**  
+```bash
+npm run dev
+```
+5️⃣ **Open in Browser:**  
+Visit `http://localhost:5173`  
+
+---
+
+## 📜 License  
+
+This project is open-source under the **MIT License**. Feel free to modify and contribute.  
+
+---
+
+📢 **For contributions, issues, or queries, reach out to us via GitHub!** 🚀  
+
+```

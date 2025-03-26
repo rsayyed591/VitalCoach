@@ -4,7 +4,6 @@ import { Button } from "../components/ui/button"
 import { Badge } from "../components/ui/badge"
 import { Progress } from "../components/ui/progress"
 import { Heart, Footprints, Droplets, Award, TrendingUp, Lightbulb, Flame } from "lucide-react"
-import { vitalService } from "../services/api"
 import { GoalSettingModal } from "../components/GoalSettingModal"
 import { motion } from "framer-motion"
 import { useNavigate } from "react-router-dom"
@@ -25,6 +24,7 @@ const healthData = {
 const quotes = [
   "The greatest wealth is health.",
   "Take care of your body. It's the only place you have to live.",
+  "Health is not valued until sickness comes.",
   "Health is not valued until sickness comes.",
   "Your health is an investment, not an expense.",
   "The first wealth is health.",
@@ -67,8 +67,22 @@ export default function Dashboard() {
     const fetchDashboardStats = async () => {
       setLoading(true)
       try {
-        const data = await vitalService.getDashboardStats()
-        console.log("Data", data)
+        // Comment out API call and use dummy data instead
+        // const data = await vitalService.getDashboardStats()
+        // console.log("Data", data)
+        const data = {
+          vitals: {
+            heart_rate: 72,
+            step_count: 8432,
+            blood_sugar: 98,
+            calories_burned: 1850,
+          },
+          aggregated: {
+            step_count: 245000,
+            distance_traveled_km: 180,
+            calories_burned: 12500,
+          },
+        }
         setStats(data)
       } catch (err) {
         setError(err.message || "Failed to fetch dashboard stats")
@@ -237,47 +251,46 @@ export default function Dashboard() {
             <Badge variant="success">On Track</Badge>
           </CardHeader>
           <CardContent className="space-y-4">
-          <div className="space-y-4">
-  {[
-    {
-      label: "Steps",
-      value: stats.aggregated.step_count,
-      max: stats.aggregated.step_count + 10000,
-      unit: "",
-    },
-    {
-      label: "Distance",
-      value: stats.aggregated.distance_traveled_km.toFixed(0),
-      max: (stats.aggregated.distance_traveled_km * 1.2).toFixed(0),
-      unit: " km",
-    },
-    {
-      label: "Calories",
-      value: (stats.aggregated.calories_burned / 10).toFixed(0),
-      max: (stats.aggregated.calories_burned * 1.2 / 10).toFixed(0),
-      unit: " kcal",
-    },
-    {
-      label: "Glucose",
-      value: stats.vitals.blood_sugar,
-      max: (stats.vitals.blood_sugar * 1.2).toFixed(0),
-      unit: " mg/dL",
-    },
-  ].map((item, index) => (
-    <div key={index} className="flex justify-between items-center w-full gap-4">
-      <div className="min-w-[100px]">
-        <p className="text-sm text-[#A1A1A1]">{item.label}</p>
-        <p className="text-xs font-medium">
-          {item.value}
-          {item.unit} / {item.max}
-          {item.unit}
-        </p>
-      </div>
-      <Progress value={item.value} max={item.max} className="w-2/3" />
-    </div>
-  ))}
-</div>
-
+            <div className="space-y-4">
+              {[
+                {
+                  label: "Steps",
+                  value: stats.aggregated.step_count,
+                  max: stats.aggregated.step_count + 10000,
+                  unit: "",
+                },
+                {
+                  label: "Distance",
+                  value: stats.aggregated.distance_traveled_km.toFixed(0),
+                  max: (stats.aggregated.distance_traveled_km * 1.2).toFixed(0),
+                  unit: " km",
+                },
+                {
+                  label: "Calories",
+                  value: (stats.aggregated.calories_burned / 10).toFixed(0),
+                  max: ((stats.aggregated.calories_burned * 1.2) / 10).toFixed(0),
+                  unit: " kcal",
+                },
+                {
+                  label: "Glucose",
+                  value: stats.vitals.blood_sugar,
+                  max: (stats.vitals.blood_sugar * 1.2).toFixed(0),
+                  unit: " mg/dL",
+                },
+              ].map((item, index) => (
+                <div key={index} className="flex justify-between items-center w-full gap-4">
+                  <div className="min-w-[100px]">
+                    <p className="text-sm text-[#A1A1A1]">{item.label}</p>
+                    <p className="text-xs font-medium">
+                      {item.value}
+                      {item.unit} / {item.max}
+                      {item.unit}
+                    </p>
+                  </div>
+                  <Progress value={item.value} max={item.max} className="w-2/3" />
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
       </motion.div>
@@ -302,3 +315,4 @@ export default function Dashboard() {
     </div>
   )
 }
+
