@@ -34,7 +34,17 @@ This project was built for **Hack2Infinity: The Infinite AI Hackathon**, an AI-f
 
 ---
 
-## 📂 Project Directory Structure  
+## 👻 System Design  
+
+Below is the **System Design** diagram illustrating the architecture of VitalCoach:
+
+<p align="center">
+  <img src="public/system_design.gif" alt="System Design" width="750px">
+</p>
+
+---
+
+## 💒 Project Directory Structure  
 
 ```bash
 rsayyed591-vitalcoach/
@@ -95,10 +105,10 @@ rsayyed591-vitalcoach/
 
 ---
 
-## 📸 Team Image  
+## 📸 Team Images  
 
 <p align="center">
-  <img src="public/team.jpg" alt="Team Image" width="750px">
+  <img src="public/team.jpg" alt="Team Image 1" width="750px">
 </p>
 
 ---
@@ -126,7 +136,7 @@ Visit `http://localhost:5173`
 
 ---
 
-## 📜 License  
+## 🐜 License  
 
 This project is open-source under the **MIT License**. Feel free to modify and contribute.  
 
@@ -134,4 +144,3 @@ This project is open-source under the **MIT License**. Feel free to modify and c
 
 📢 **For contributions, issues, or queries, reach out to us via GitHub!** 🚀  
 
-```
