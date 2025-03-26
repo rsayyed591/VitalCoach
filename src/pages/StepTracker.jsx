@@ -225,7 +225,7 @@ export default function StepTracker() {
                 <CardContent className="p-3 flex flex-col items-center justify-center h-full">
                   <Flame className="w-5 h-5 text-[#FF4D4D] mb-1" />
                   <p className="text-xs text-[#A1A1A1]">Calories</p>
-                  <p className="text-lg font-bold">{caloriesBurned}</p>
+                  <p className="text-lg font-bold">{stats.vitals.calories_burned}</p>
                 </CardContent>
               </Card>
             </motion.div>
