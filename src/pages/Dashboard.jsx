@@ -164,7 +164,7 @@ export default function Dashboard() {
               <Footprints className="w-8 h-8 text-[#16A34A] mb-2" />
               <p className="text-[#A1A1A1] text-sm">Steps</p>
               <p className="text-2xl font-bold">{stats.vitals.step_count.toLocaleString()}</p>
-              <Progress value={stats.vitals.step_count} max={healthData.goalSteps} className="mt-2 w-full" />
+              <Progress value={stats.vitals.step_count} max={stats.vitals.step_count + 100} className="mt-2 w-full" />
             </CardContent>
           </Card>
         </motion.div>
@@ -192,7 +192,7 @@ export default function Dashboard() {
           <Card>
             <CardContent className="p-4 flex flex-col items-center justify-center">
               <Flame className="w-8 h-8 text-[#f93131] mb-2" />
-              <p className="text-[#A1A1A1] text-sm">Sleep</p>
+              <p className="text-[#A1A1A1] text-sm">Calories</p>
               <p className="text-2xl font-bold">{stats.vitals.calories_burned}</p>
               <p className="text-xs text-[#A1A1A1]">kcal</p>
             </CardContent>

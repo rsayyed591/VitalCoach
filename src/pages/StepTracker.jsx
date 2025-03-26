@@ -8,6 +8,7 @@ import { Footprints, Award, Users, ChevronRight, Calendar, Clock, Flame, Zap } f
 import { BarChart, Bar, XAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 import confetti from "canvas-confetti"
 import { motion } from "framer-motion"
+import { vitalService } from "../services/api"
 
 // Dummy data for demonstration
 const stepData = {
@@ -33,6 +34,9 @@ const stepData = {
 export default function StepTracker() {
   const [currentSteps, setCurrentSteps] = useState(stepData.today)
   const [selectedDate, setSelectedDate] = useState("Today")
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [stats, setStats] = useState({})
   const [goalReached, setGoalReached] = useState(false)
   const [activeTab, setActiveTab] = useState("overview")
 
@@ -77,8 +81,25 @@ export default function StepTracker() {
     return () => setGoalReached(false)
   }, [])
 
+  useEffect(() => {
+      const fetchDashboardStats = async () => {
+        setLoading(true)
+        try {
+          const data = await vitalService.getDashboardStats()
+          console.log("Net", data)
+          setStats(data)
+        } catch (err) {
+          setError(err.message || "Failed to fetch dashboard stats")
+        } finally {
+          setLoading(false)
+        }
+      }
+  
+      fetchDashboardStats()
+    }, [])
+
   // Calculate percentage of goal
-  const goalPercentage = Math.min(100, Math.round((currentSteps / stepData.goal) * 100))
+  const goalPercentage = stats.vitals ? Math.min(100, Math.round((stats.vitals.step_count / (stats.vitals.step_count + 100)) * 100)) : 0
 
   // Calculate calories burned (rough estimate)
   const caloriesBurned = Math.round(currentSteps * 0.04)
@@ -86,6 +107,21 @@ export default function StepTracker() {
   // Calculate distance (rough estimate)
   const distanceKm = (currentSteps * 0.0008).toFixed(2)
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center lg:h-[70vh] bg-[#191E29]">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
+          className="w-8 h-8 border-2 border-[#16A34A] border-t-transparent rounded-full"
+        />
+      </div>
+    )
+  }
+
+  if (error) {
+    return <div className="bg-red-500/10 text-red-500 p-4 rounded-lg">{error}</div>
+  }
   return (
     <div className="space-y-6 page-transition">
       <header className="mb-6">
@@ -151,14 +187,14 @@ export default function StepTracker() {
                       </svg>
                       <div className="absolute inset-0 flex flex-col items-center justify-center">
                         <Footprints className="w-8 h-8 text-[#16A34A] mb-1" />
-                        <p className="text-4xl font-bold">{currentSteps.toLocaleString()}</p>
+                        <p className="text-4xl font-bold">{stats.vitals.step_count}</p>
                         <p className="text-sm text-[#A1A1A1]">steps</p>
                       </div>
                     </div>
                   </div>
 
                   <p className="text-center text-sm text-[#A1A1A1] mb-4">
-                    {goalPercentage}% of daily goal ({stepData.goal.toLocaleString()} steps)
+                    {goalPercentage}% of daily goal ({stats.vitals.step_count.toLocaleString()} steps)
                   </p>
 
                   {goalReached && (
