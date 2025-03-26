@@ -45,9 +45,9 @@ function App() {
         <main className="container mx-auto px-4 py-6">
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/steptracker" element={<StepTrackerPage />} />
+            <Route path="/step-tracker" element={<StepTrackerPage />} />
             <Route path="/health" element={<HealthPage />} />
-            <Route path="/recommendation" element={<RecommendationPage />} />
+            <Route path="/recommendations" element={<RecommendationPage />} />
             <Route path="/profile" element={<ProfilePage navItems={navItems}/>} />
           </Routes>
         </main>

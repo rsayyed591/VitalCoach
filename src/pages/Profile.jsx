@@ -1,23 +1,43 @@
+"use client"
+
 import { useState, useEffect } from "react"
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card"
 import { Button } from "../components/ui/button"
 import { Badge } from "../components/ui/badge"
 import { Progress } from "../components/ui/progress"
-import { Award, Calendar, Share2, Settings, Heart, Flame, Droplets, Moon, Trophy, Target, Zap, CheckCircle, Gift, Edit, Save, Crown, X } from 'lucide-react'
-import { MedicalFormModal } from "../components/MedicalFormModal"
 import {
-  Dialog,
-  // DialogTrigger,
-  // DialogContent,
-  // DialogHeader,
-  // DialogFooter,
-  // DialogTitle,
-  // DialogDescription,
-  // DialogClose,
-  // DialogOverlay,
-  // DialogPortal
-} from "../components/ui/dialog"
+  Award,
+  Calendar,
+  Share2,
+  Settings,
+  Heart,
+  Flame,
+  Droplets,
+  Moon,
+  Trophy,
+  Target,
+  Zap,
+  CheckCircle,
+  Gift,
+  Save,
+  Crown,
+  MoreVertical,
+  Bell,
+  LogOut,
+  User,
+  FileText,
+} from "lucide-react"
+import { MedicalFormModal } from "../components/MedicalFormModal"
+import { Dialog } from "../components/ui/dialog"
 import { motion, AnimatePresence } from "framer-motion"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../components/ui/dropdown-menu"
 
 // Dummy data for demonstration
 const initialProfileData = {
@@ -35,10 +55,10 @@ const initialProfileData = {
       completed: true,
       tokens: 10,
     },
-    { 
-      name: "Early Bird", 
-      description: "Logged activity before 8 AM for 5 days", 
-      icon: "sun", 
+    {
+      name: "Early Bird",
+      description: "Logged activity before 8 AM for 5 days",
+      icon: "sun",
       completed: true,
       tokens: 5,
     },
@@ -58,10 +78,10 @@ const initialProfileData = {
       progress: 40,
       tokens: 10,
     },
-    { 
-      name: "Workout Warrior", 
-      description: "Completed 20 workouts", 
-      icon: "dumbbell", 
+    {
+      name: "Workout Warrior",
+      description: "Completed 20 workouts",
+      icon: "dumbbell",
       completed: true,
       tokens: 20,
     },
@@ -82,6 +102,7 @@ export default function Profile() {
   const [showReward, setShowReward] = useState(false)
   const [isEditingProfile, setIsEditingProfile] = useState(false)
   const [isPremiumModalOpen, setIsPremiumModalOpen] = useState(false)
+  const [isNoticesModalOpen, setIsNoticesModalOpen] = useState(false)
   const [editedProfile, setEditedProfile] = useState({
     name: initialProfileData.name,
     age: initialProfileData.age,
@@ -90,24 +111,32 @@ export default function Profile() {
     bio: "Fitness enthusiast focused on holistic health improvement.",
   })
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+  const [navbarStyle, setNavbarStyle] = useState("icons-labels") // icons-only, icons-labels, minimal
 
   // Hide chat bot when modal is open
   useEffect(() => {
-    const chatBot = document.querySelector('.fixed.bottom-20.right-4.z-50');
+    const chatBot = document.querySelector(".fixed.bottom-20.right-4.z-50")
     if (chatBot) {
-      if (isEditingProfile || isMedicalFormOpen || showReward || isPremiumModalOpen || isSettingsOpen) {
-        chatBot.style.display = 'none';
+      if (
+        isEditingProfile ||
+        isMedicalFormOpen ||
+        showReward ||
+        isPremiumModalOpen ||
+        isSettingsOpen ||
+        isNoticesModalOpen
+      ) {
+        chatBot.style.display = "none"
       } else {
-        chatBot.style.display = 'block';
+        chatBot.style.display = "block"
       }
     }
-    
+
     return () => {
       if (chatBot) {
-        chatBot.style.display = 'block';
+        chatBot.style.display = "block"
       }
-    };
-  }, [isEditingProfile, isMedicalFormOpen, showReward, isPremiumModalOpen, isSettingsOpen]);
+    }
+  }, [isEditingProfile, isMedicalFormOpen, showReward, isPremiumModalOpen, isSettingsOpen, isNoticesModalOpen])
 
   // Simulate dynamic streak and tokens
   useEffect(() => {
@@ -115,7 +144,7 @@ export default function Profile() {
       // Randomly increase streak (10% chance)
       if (Math.random() < 0.1) {
         setStreakCount((prev) => prev + 1)
-        
+
         // Add tokens for streak milestone
         if ((streakCount + 1) % 5 === 0) {
           addTokens(5)
@@ -129,7 +158,7 @@ export default function Profile() {
   const addTokens = (amount) => {
     const newTokens = tokens + amount
     setTokens(newTokens)
-    
+
     // Check if tokens reached 100
     if (newTokens >= 100 && tokens < 100) {
       setShowReward(true)
@@ -145,7 +174,7 @@ export default function Profile() {
       ...prev,
       medicalHistory: updatedData,
     }))
-    
+
     // Add tokens for updating medical info
     addTokens(5)
   }
@@ -160,7 +189,7 @@ export default function Profile() {
         ...prev,
         achievements: updatedAchievements,
       }))
-      
+
       // Add tokens for completing achievement
       addTokens(updatedAchievements[index].tokens)
     }
@@ -187,9 +216,9 @@ export default function Profile() {
       }))
     }
   }
-  
+
   const handleSaveProfile = () => {
-    setProfileData(prev => ({
+    setProfileData((prev) => ({
       ...prev,
       name: editedProfile.name,
       age: editedProfile.age,
@@ -197,21 +226,27 @@ export default function Profile() {
       weight: editedProfile.weight,
     }))
     setIsEditingProfile(false)
-    
+
     // Add tokens for updating profile
     addTokens(3)
   }
-  
+
   const handleClaimReward = () => {
     setShowReward(false)
     setTokens(tokens - 100)
-    
+
     // In a real app, you would trigger some reward mechanism here
     alert("Congratulations! You've claimed your reward!")
   }
 
+  const handleChangeNavbarStyle = (style) => {
+    setNavbarStyle(style)
+    setIsSettingsOpen(false)
+    // In a real app, you would save this preference to user settings
+  }
+
   return (
-    <div className="space-y-4 page-transition">
+    <div className="space-y-4 page-transition pb-20">
       <header className="mb-2">
         <h1 className="text-2xl font-bold">Profile</h1>
         <p className="text-[#A1A1A1]">Your health journey and achievements</p>
@@ -221,22 +256,74 @@ export default function Profile() {
       <Card className="overflow-hidden">
         <CardContent className="p-0">
           <div className="relative">
+            {/* Top-right menu and premium icon */}
+            <div className="absolute top-2 right-2 flex items-center gap-2 z-10">
+              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setIsPremiumModalOpen(true)}>
+                <Crown className="w-5 h-5 text-gray-400 hover:text-yellow-400 transition-colors" />
+              </Button>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <MoreVertical className="w-5 h-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => setIsEditingProfile(true)}>
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Edit Profile</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setIsMedicalFormOpen(true)}>
+                    <Heart className="mr-2 h-4 w-4" />
+                    <span>Medical History</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setIsSettingsOpen(true)}>
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Settings</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setIsNoticesModalOpen(true)}>
+                    <Bell className="mr-2 h-4 w-4" />
+                    <span>Notices</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Log out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+
             {/* Profile Header */}
-            <div className="flex items-center p-4">
-              <div className="w-16 h-16 rounded-full bg-[#2A2D3A] flex items-center justify-center text-xl font-bold">
+            <div className="flex items-center p-4 pt-6">
+              <div className="w-20 h-20 rounded-full bg-[#2A2D3A] flex items-center justify-center text-xl font-bold">
                 {profileData.name.charAt(0)}
               </div>
               <div className="ml-4 flex-1">
                 <div className="flex items-center justify-between">
                   <div>
                     <h2 className="text-xl font-bold">{profileData.name}</h2>
-                    <p className="text-[#A1A1A1] text-sm">
-                      {profileData.age} years • {profileData.height}cm • {profileData.weight}kg
-                    </p>
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-1">
+                      <p className="text-[#A1A1A1] text-sm flex items-center">
+                        <span className="w-16">Age:</span>
+                        <span className="font-medium text-white">{profileData.age} years</span>
+                      </p>
+                      <p className="text-[#A1A1A1] text-sm flex items-center">
+                        <span className="w-16">Height:</span>
+                        <span className="font-medium text-white">{profileData.height} cm</span>
+                      </p>
+                      <p className="text-[#A1A1A1] text-sm flex items-center">
+                        <span className="w-16">Weight:</span>
+                        <span className="font-medium text-white">{profileData.weight} kg</span>
+                      </p>
+                      <p className="text-[#A1A1A1] text-sm flex items-center">
+                        <span className="w-16">Streak:</span>
+                        <span className="font-medium text-white">{streakCount} days</span>
+                      </p>
+                    </div>
                   </div>
-                  <Button variant="ghost" size="icon" onClick={() => setIsEditingProfile(true)}>
-                    <Edit className="w-5 h-5" />
-                  </Button>
                 </div>
               </div>
             </div>
@@ -247,49 +334,58 @@ export default function Profile() {
                 <Flame className="w-4 h-4 mr-1" />
                 {streakCount} Day Streak
               </Badge>
-              
+
               <div className="flex gap-2">
                 <Button variant="ghost" size="icon" onClick={handleShareProgress}>
                   <Share2 className="w-5 h-5" />
                 </Button>
-                <Button variant="ghost" size="icon" onClick={() => setIsSettingsOpen(true)}>
-                  <Settings className="w-5 h-5" />
-                </Button>
               </div>
             </div>
 
-            {/* Premium Button */}
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="absolute top-2 right-2"
-              onClick={() => setIsPremiumModalOpen(true)}
-            >
-              <Crown className="w-5 h-5 text-yellow-400" />
-            </Button>
-            
-            {/* Token Progress */}
-            <div className="px-4 pb-4">
-              <div className="flex justify-between items-center mb-1">
-                <p className="text-sm">Tokens</p>
-                <p className="text-sm">{tokens}/100</p>
+            {/* Token Progress - Circular */}
+            <div className="px-4 pb-4 flex items-center justify-between">
+              <div className="flex-1">
+                <p className="text-sm mb-1">Tokens</p>
+                <p className="text-xs text-[#A1A1A1]">
+                  Earn tokens by completing activities and achievements. Redeem 100 tokens for rewards!
+                </p>
               </div>
-              <div className="relative h-2 w-full bg-gray-700 rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-gradient-to-r from-green-500 via-blue-500 to-indigo-500 rounded-full" 
-                  style={{ width: `${tokens}%` }}
-                ></div>
+              <div className="relative w-16 h-16 flex-shrink-0">
+                <svg className="w-full h-full" viewBox="0 0 100 100">
+                  {/* Background circle */}
+                  <circle cx="50" cy="50" r="45" fill="none" stroke="#2A2D3A" strokeWidth="10" />
+                  {/* Progress circle */}
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="45"
+                    fill="none"
+                    stroke="url(#gradient)"
+                    strokeWidth="10"
+                    strokeLinecap="round"
+                    strokeDasharray={`${2 * Math.PI * 45}`}
+                    strokeDashoffset={2 * Math.PI * 45 * (1 - tokens / 100)}
+                    transform="rotate(-90 50 50)"
+                  />
+                  <defs>
+                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#16A34A" />
+                      <stop offset="50%" stopColor="#06B6D4" />
+                      <stop offset="100%" stopColor="#6366F1" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <p className="text-lg font-bold">{tokens}</p>
+                </div>
               </div>
-              <p className="text-xs text-[#A1A1A1] mt-1">
-                Earn tokens by completing activities and achievements. Redeem 100 tokens for rewards!
-              </p>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Tabs */}
-      <div className="flex gap-2 bg-[#1E1E1E] p-1 rounded-lg">
+      {/* Tabs with horizontal scrolling */}
+      <div className="flex gap-2 bg-[#1E1E1E] p-1 rounded-lg overflow-x-auto hide-scrollbar">
         <Button
           variant={activeTab === "achievements" ? "primary" : "ghost"}
           className={`flex-1 ${activeTab === "achievements" ? "bg-[#16A34A]" : ""}`}
@@ -297,7 +393,7 @@ export default function Profile() {
         >
           Achievements
         </Button>
-        <Button 
+        <Button
           variant={activeTab === "medical" ? "primary" : "ghost"}
           className={`flex-1 ${activeTab === "medical" ? "bg-[#16A34A]" : ""}`}
           onClick={() => setActiveTab("medical")}
@@ -512,7 +608,7 @@ export default function Profile() {
               className="w-full bg-[#2A2D3A] text-[#E4E4E4] border-none rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#16A34A]"
             />
           </div>
-          
+
           <div className="space-y-2">
             <label className="text-sm text-[#A1A1A1]">Bio</label>
             <textarea
@@ -521,39 +617,39 @@ export default function Profile() {
               className="w-full bg-[#2A2D3A] text-[#E4E4E4] border-none rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#16A34A] min-h-[80px]"
             />
           </div>
-          
+
           <div className="grid grid-cols-3 gap-4">
             <div className="space-y-2">
               <label className="text-sm text-[#A1A1A1]">Age</label>
               <input
                 type="number"
                 value={editedProfile.age}
-                onChange={(e) => setEditedProfile({ ...editedProfile, age: parseInt(e.target.value) || 0 })}
+                onChange={(e) => setEditedProfile({ ...editedProfile, age: Number.parseInt(e.target.value) || 0 })}
                 className="w-full bg-[#2A2D3A] text-[#E4E4E4] border-none rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#16A34A]"
               />
             </div>
-            
+
             <div className="space-y-2">
               <label className="text-sm text-[#A1A1A1]">Height (cm)</label>
               <input
                 type="number"
                 value={editedProfile.height}
-                onChange={(e) => setEditedProfile({ ...editedProfile, height: parseInt(e.target.value) || 0 })}
+                onChange={(e) => setEditedProfile({ ...editedProfile, height: Number.parseInt(e.target.value) || 0 })}
                 className="w-full bg-[#2A2D3A] text-[#E4E4E4] border-none rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#16A34A]"
               />
             </div>
-            
+
             <div className="space-y-2">
               <label className="text-sm text-[#A1A1A1]">Weight (kg)</label>
               <input
                 type="number"
                 value={editedProfile.weight}
-                onChange={(e) => setEditedProfile({ ...editedProfile, weight: parseInt(e.target.value) || 0 })}
+                onChange={(e) => setEditedProfile({ ...editedProfile, weight: Number.parseInt(e.target.value) || 0 })}
                 className="w-full bg-[#2A2D3A] text-[#E4E4E4] border-none rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#16A34A]"
               />
             </div>
           </div>
-          
+
           <div className="pt-2 flex gap-2 justify-end">
             <Button
               type="button"
@@ -587,14 +683,14 @@ export default function Profile() {
                   <div className="absolute left-0.5 top-0.5 w-4 h-4 rounded-full bg-[#16A34A]"></div>
                 </div>
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <span className="text-sm">Notifications</span>
                 <div className="w-10 h-5 bg-[#2A2D3A] rounded-full relative">
                   <div className="absolute right-0.5 top-0.5 w-4 h-4 rounded-full bg-[#A1A1A1]"></div>
                 </div>
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <span className="text-sm">Activity Reminders</span>
                 <div className="w-10 h-5 bg-[#2A2D3A] rounded-full relative">
@@ -603,7 +699,45 @@ export default function Profile() {
               </div>
             </div>
           </div>
-          
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Navigation Bar Style</label>
+            <div className="space-y-3 mt-2">
+              <div
+                className={`p-3 rounded-lg border ${navbarStyle === "icons-only" ? "border-[#16A34A] bg-[#16A34A]/10" : "border-[#2A2D3A]"}`}
+                onClick={() => handleChangeNavbarStyle("icons-only")}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">Icons Only</span>
+                  {navbarStyle === "icons-only" && <CheckCircle className="w-4 h-4 text-[#16A34A]" />}
+                </div>
+                <p className="text-xs text-[#A1A1A1] mt-1">Display only icons in the navigation bar</p>
+              </div>
+
+              <div
+                className={`p-3 rounded-lg border ${navbarStyle === "icons-labels" ? "border-[#16A34A] bg-[#16A34A]/10" : "border-[#2A2D3A]"}`}
+                onClick={() => handleChangeNavbarStyle("icons-labels")}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">Icons + Labels</span>
+                  {navbarStyle === "icons-labels" && <CheckCircle className="w-4 h-4 text-[#16A34A]" />}
+                </div>
+                <p className="text-xs text-[#A1A1A1] mt-1">Display icons and labels in the navigation bar</p>
+              </div>
+
+              <div
+                className={`p-3 rounded-lg border ${navbarStyle === "minimal" ? "border-[#16A34A] bg-[#16A34A]/10" : "border-[#2A2D3A]"}`}
+                onClick={() => handleChangeNavbarStyle("minimal")}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">Minimal Floating</span>
+                  {navbarStyle === "minimal" && <CheckCircle className="w-4 h-4 text-[#16A34A]" />}
+                </div>
+                <p className="text-xs text-[#A1A1A1] mt-1">Display a minimal floating navigation button</p>
+              </div>
+            </div>
+          </div>
+
           <div className="space-y-2">
             <label className="text-sm font-medium">Privacy</label>
             <div className="space-y-2">
@@ -613,7 +747,7 @@ export default function Profile() {
                   <div className="absolute right-0.5 top-0.5 w-4 h-4 rounded-full bg-[#A1A1A1]"></div>
                 </div>
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <span className="text-sm">Allow Data Analytics</span>
                 <div className="w-10 h-5 bg-[#2A2D3A] rounded-full relative">
@@ -622,11 +756,62 @@ export default function Profile() {
               </div>
             </div>
           </div>
-          
+
           <div className="pt-4">
             <Button variant="outline" className="w-full">
               Sign Out
             </Button>
+          </div>
+        </div>
+      </Dialog>
+
+      {/* Notices Modal */}
+      <Dialog isOpen={isNoticesModalOpen} onClose={() => setIsNoticesModalOpen(false)} title="Notices">
+        <div className="space-y-4">
+          <div className="bg-[#2A2D3A] rounded-lg p-4">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-full bg-[#16A34A]/20 flex items-center justify-center flex-shrink-0">
+                <Bell className="w-4 h-4 text-[#16A34A]" />
+              </div>
+              <div>
+                <h3 className="font-medium">New Features Available</h3>
+                <p className="text-sm text-[#A1A1A1] mt-1">
+                  We've added new features to help you track your health better. Check out the new sleep tracking and
+                  nutrition analysis tools!
+                </p>
+                <p className="text-xs text-[#A1A1A1] mt-2">2 days ago</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-[#2A2D3A] rounded-lg p-4">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-full bg-[#06B6D4]/20 flex items-center justify-center flex-shrink-0">
+                <FileText className="w-4 h-4 text-[#06B6D4]" />
+              </div>
+              <div>
+                <h3 className="font-medium">Privacy Policy Update</h3>
+                <p className="text-sm text-[#A1A1A1] mt-1">
+                  We've updated our privacy policy to better protect your data. Please review the changes.
+                </p>
+                <p className="text-xs text-[#A1A1A1] mt-2">1 week ago</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-[#2A2D3A] rounded-lg p-4">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-full bg-[#FF4D4D]/20 flex items-center justify-center flex-shrink-0">
+                <Award className="w-4 h-4 text-[#FF4D4D]" />
+              </div>
+              <div>
+                <h3 className="font-medium">New Achievement Unlocked</h3>
+                <p className="text-sm text-[#A1A1A1] mt-1">
+                  You've unlocked the "Early Adopter" achievement for being one of our first users!
+                </p>
+                <p className="text-xs text-[#A1A1A1] mt-2">2 weeks ago</p>
+              </div>
+            </div>
           </div>
         </div>
       </Dialog>
@@ -639,29 +824,31 @@ export default function Profile() {
               <Crown className="w-8 h-8 text-yellow-500" />
             </div>
           </div>
-          
+
           <h3 className="text-lg font-bold text-center">You are using the free tier</h3>
-          <p className="text-center text-[#A1A1A1]">
-            Upgrade to premium to unlock additional features!
-          </p>
-          
+          <p className="text-center text-[#A1A1A1]">Upgrade to premium to unlock additional features!</p>
+
           <div className="bg-[#2A2D3A] rounded-lg p-4 space-y-3">
             <div className="flex items-start gap-2">
               <CheckCircle className="w-5 h-5 text-yellow-500 mt-0.5" />
               <div>
                 <h4 className="font-medium">Advanced Analytics</h4>
-                <p className="text-sm text-[#A1A1A1]">Get deeper insights into your health data with advanced charts and trends.</p>
+                <p className="text-sm text-[#A1A1A1]">
+                  Get deeper insights into your health data with advanced charts and trends.
+                </p>
               </div>
             </div>
-            
+
             <div className="flex items-start gap-2">
               <CheckCircle className="w-5 h-5 text-yellow-500 mt-0.5" />
               <div>
                 <h4 className="font-medium">Personalized Insights</h4>
-                <p className="text-sm text-[#A1A1A1]">Receive AI-powered recommendations tailored to your health goals.</p>
+                <p className="text-sm text-[#A1A1A1]">
+                  Receive AI-powered recommendations tailored to your health goals.
+                </p>
               </div>
             </div>
-            
+
             <div className="flex items-start gap-2">
               <CheckCircle className="w-5 h-5 text-yellow-500 mt-0.5" />
               <div>
@@ -669,7 +856,7 @@ export default function Profile() {
                 <p className="text-sm text-[#A1A1A1]">Get faster responses from our dedicated support team.</p>
               </div>
             </div>
-            
+
             <div className="flex items-start gap-2">
               <CheckCircle className="w-5 h-5 text-yellow-500 mt-0.5" />
               <div>
@@ -678,7 +865,7 @@ export default function Profile() {
               </div>
             </div>
           </div>
-          
+
           <div className="flex gap-2 pt-2">
             <Button variant="outline" className="flex-1" onClick={() => setIsPremiumModalOpen(false)}>
               Close
@@ -713,9 +900,7 @@ export default function Profile() {
                   </div>
                 </div>
                 <h2 className="text-2xl font-bold mb-2">Congratulations!</h2>
-                <p className="text-[#A1A1A1] mb-4">
-                  You've earned 100 tokens! Claim your reward now.
-                </p>
+                <p className="text-[#A1A1A1] mb-4">You've earned 100 tokens! Claim your reward now.</p>
                 <div className="flex gap-2 justify-center">
                   <Button variant="outline" onClick={() => setShowReward(false)}>
                     Later
@@ -732,3 +917,4 @@ export default function Profile() {
     </div>
   )
 }
+
