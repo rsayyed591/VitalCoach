@@ -1,12 +1,70 @@
-"use client"
-
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card"
 import { Button } from "../components/ui/button"
 import { Badge } from "../components/ui/badge"
-import { Heart, Activity, Droplets, Moon, ArrowUp, Download } from "lucide-react"
+import { Heart, Activity, Droplets, Moon, ArrowUp, Download, Info } from 'lucide-react'
 import { LineChart, Line, XAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from "recharts"
 import { motion } from "framer-motion"
+
+// Weekly data for demonstration
+const weeklyData = {
+  heartRate: {
+    current: 72,
+    data: [
+      { day: "Mon", value: 68 },
+      { day: "Tue", value: 72 },
+      { day: "Wed", value: 75 },
+      { day: "Thu", value: 71 },
+      { day: "Fri", value: 69 },
+      { day: "Sat", value: 73 },
+      { day: "Sun", value: 72 },
+    ],
+    trend: "+3 bpm from last week",
+    insight: "Your heart rate is within normal range but slightly elevated on Wednesday."
+  },
+  steps: {
+    current: 8432,
+    data: [
+      { day: "Mon", value: 6543 },
+      { day: "Tue", value: 7821 },
+      { day: "Wed", value: 9432 },
+      { day: "Thu", value: 5678 },
+      { day: "Fri", value: 8432 },
+      { day: "Sat", value: 10234 },
+      { day: "Sun", value: 8432 },
+    ],
+    trend: "+12% from last week",
+    insight: "You're most active on Saturdays. Try to maintain consistent activity throughout the week."
+  },
+  glucose: {
+    current: 98,
+    data: [
+      { day: "Mon", value: 95 },
+      { day: "Tue", value: 102 },
+      { day: "Wed", value: 98 },
+      { day: "Thu", value: 97 },
+      { day: "Fri", value: 99 },
+      { day: "Sat", value: 101 },
+      { day: "Sun", value: 98 },
+    ],
+    trend: "Stable levels",
+    insight: "Your glucose levels are stable. Keep monitoring after meals for better insights."
+  },
+  sleep: {
+    current: 7.5,
+    data: [
+      { day: "Mon", value: 6.8 },
+      { day: "Tue", value: 7.2 },
+      { day: "Wed", value: 7.5 },
+      { day: "Thu", value: 8.1 },
+      { day: "Fri", value: 6.5 },
+      { day: "Sat", value: 7.8 },
+      { day: "Sun", value: 7.5 },
+    ],
+    trend: "+0.3 hours from last week",
+    insight: "Your sleep pattern is irregular. Try to maintain a consistent sleep schedule."
+  },
+}
 
 // Monthly data for demonstration
 const monthlyData = {
@@ -27,6 +85,7 @@ const monthlyData = {
       { month: "D", value: 72 },
     ],
     trend: "+3 bpm from last month",
+    insight: "Your resting heart rate has been consistent throughout the year with slight seasonal variations."
   },
   steps: {
     current: 8432,
@@ -45,6 +104,7 @@ const monthlyData = {
       { month: "D", value: 8432 },
     ],
     trend: "+12% from last month",
+    insight: "Your activity peaks during summer months. Consider indoor activities during winter to maintain consistency."
   },
   glucose: {
     current: 98,
@@ -63,6 +123,7 @@ const monthlyData = {
       { month: "D", value: 98 },
     ],
     trend: "Stable levels",
+    insight: "Your glucose levels have remained stable throughout the year. Continue your current diet plan."
   },
   sleep: {
     current: 7.5,
@@ -81,36 +142,132 @@ const monthlyData = {
       { month: "D", value: 7.5 },
     ],
     trend: "+0.3 hours from last month",
+    insight: "Your sleep duration is better in spring and fall. Consider adjusting your sleep environment during summer and winter."
+  },
+}
+
+// Quarterly data for demonstration
+const quarterlyData = {
+  heartRate: {
+    current: 72,
+    data: [
+      { quarter: "Q1", value: 71 },
+      { quarter: "Q2", value: 73 },
+      { quarter: "Q3", value: 70 },
+      { quarter: "Q4", value: 72 },
+    ],
+    trend: "Stable throughout the year",
+    insight: "Your heart rate shows minimal variation across quarters, indicating good cardiovascular stability."
+  },
+  steps: {
+    current: 8432,
+    data: [
+      { quarter: "Q1", value: 7500 },
+      { quarter: "Q2", value: 9200 },
+      { quarter: "Q3", value: 8800 },
+      { quarter: "Q4", value: 7900 },
+    ],
+    trend: "Higher in Q2 and Q3",
+    insight: "You're most active during spring and summer. Consider indoor fitness activities during fall and winter."
+  },
+  glucose: {
+    current: 98,
+    data: [
+      { quarter: "Q1", value: 98 },
+      { quarter: "Q2", value: 99 },
+      { quarter: "Q3", value: 97 },
+      { quarter: "Q4", value: 99 },
+    ],
+    trend: "Consistent throughout the year",
+    insight: "Your glucose levels remain remarkably stable across seasons, suggesting good metabolic health."
+  },
+  sleep: {
+    current: 7.5,
+    data: [
+      { quarter: "Q1", value: 7.2 },
+      { quarter: "Q2", value: 7.5 },
+      { quarter: "Q3", value: 7.4 },
+      { quarter: "Q4", value: 7.6 },
+    ],
+    trend: "Slightly better in Q4",
+    insight: "Your sleep quality improves in the last quarter of the year. Consider maintaining those habits year-round."
   },
 }
 
 export default function HealthSummary() {
   const [timeRange, setTimeRange] = useState("month")
-  const [chartData] = useState(monthlyData)
+  const [showInsights, setShowInsights] = useState({
+    heartRate: false,
+    steps: false,
+    glucose: false,
+    sleep: false
+  })
+
+  // Get the appropriate data based on the selected time range
+  const getChartData = () => {
+    switch (timeRange) {
+      case "week":
+        return weeklyData
+      case "month":
+        return monthlyData
+      case "quarter":
+        return quarterlyData
+      default:
+        return monthlyData
+    }
+  }
+
+  const chartData = getChartData()
+
+  // Get the appropriate x-axis key based on the selected time range
+  const getXAxisKey = () => {
+    switch (timeRange) {
+      case "week":
+        return "day"
+      case "month":
+        return "month"
+      case "quarter":
+        return "quarter"
+      default:
+        return "month"
+    }
+  }
+
+  const xAxisKey = getXAxisKey()
 
   // Custom tooltip component for charts
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
-      const monthNames = {
-        J: "January/July",
-        F: "February",
-        M: "March/May",
-        A: "April/August",
-        S: "September",
-        O: "October",
-        N: "November",
-        D: "December",
+      let displayLabel = label
+      
+      if (timeRange === "month") {
+        const monthNames = {
+          "J": "January/July", 
+          "F": "February", 
+          "M": "March/May", 
+          "A": "April/August", 
+          "S": "September", 
+          "O": "October", 
+          "N": "November", 
+          "D": "December"
+        }
+        displayLabel = monthNames[label] || label
       }
-
-      const fullMonth = monthNames[label] || label
-
+      
       return (
         <div className="bg-[#2A2D3A] p-2 rounded-md border border-[#16A34A]/30">
-          <p className="text-[#E4E4E4]">{`${fullMonth}: ${payload[0].value}`}</p>
+          <p className="text-[#E4E4E4]">{`${displayLabel}: ${payload[0].value}`}</p>
         </div>
       )
     }
     return null
+  }
+
+  const toggleInsight = (metric) => {
+    setShowInsights(prev => ({
+      ...prev,
+      [metric]: !prev[metric]
+    }))
   }
 
   return (
@@ -123,7 +280,11 @@ export default function HealthSummary() {
       {/* Time Range Selector */}
       <div className="flex gap-2">
         {["week", "month", "quarter"].map((range) => (
-          <Button key={range} variant={timeRange === range ? "primary" : "default"} onClick={() => setTimeRange(range)}>
+          <Button 
+            key={range} 
+            variant={timeRange === range ? "primary" : "default"} 
+            onClick={() => setTimeRange(range)}
+          >
             {range.charAt(0).toUpperCase() + range.slice(1)}
           </Button>
         ))}
@@ -135,22 +296,42 @@ export default function HealthSummary() {
       </div>
 
       {/* Heart Rate */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+      <motion.div 
+        key={`heartRate-${timeRange}`}
+        initial={{ opacity: 0, y: 20 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        transition={{ duration: 0.5 }}
+      >
         <Card>
           <CardHeader>
             <div className="flex justify-between items-center">
               <CardTitle className="flex items-center">
                 <Heart className="w-5 h-5 mr-2 text-[#FF4D4D]" /> Heart Rate
               </CardTitle>
-              <Badge variant="info">{chartData.heartRate.current} bpm</Badge>
+              <div className="flex items-center gap-2">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-8 w-8" 
+                  onClick={() => toggleInsight('heartRate')}
+                >
+                  <Info className="h-4 w-4" />
+                </Button>
+                <Badge variant="info">{chartData.heartRate.current} bpm</Badge>
+              </div>
             </div>
+            {showInsights.heartRate && (
+              <div className="mt-2 text-sm bg-[#2A2D3A] p-2 rounded-md">
+                <p>{chartData.heartRate.insight}</p>
+              </div>
+            )}
           </CardHeader>
           <CardContent>
             <div className="h-[200px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={chartData.heartRate.data}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#2A2D3A" />
-                  <XAxis dataKey="month" stroke="#A1A1A1" />
+                  <XAxis dataKey={xAxisKey} stroke="#A1A1A1" />
                   <Tooltip content={<CustomTooltip />} />
                   <Line
                     type="monotone"
@@ -173,9 +354,10 @@ export default function HealthSummary() {
       </motion.div>
 
       {/* Steps */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+      <motion.div 
+        key={`steps-${timeRange}`}
+        initial={{ opacity: 0, y: 20 }} 
+        animate={{ opacity: 1, y: 0 }} 
         transition={{ duration: 0.5, delay: 0.1 }}
       >
         <Card>
@@ -184,15 +366,30 @@ export default function HealthSummary() {
               <CardTitle className="flex items-center">
                 <Activity className="w-5 h-5 mr-2 text-[#16A34A]" /> Steps
               </CardTitle>
-              <Badge variant="success">{chartData.steps.current.toLocaleString()}</Badge>
+              <div className="flex items-center gap-2">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-8 w-8" 
+                  onClick={() => toggleInsight('steps')}
+                >
+                  <Info className="h-4 w-4" />
+                </Button>
+                <Badge variant="success">{chartData.steps.current.toLocaleString()}</Badge>
+              </div>
             </div>
+            {showInsights.steps && (
+              <div className="mt-2 text-sm bg-[#2A2D3A] p-2 rounded-md">
+                <p>{chartData.steps.insight}</p>
+              </div>
+            )}
           </CardHeader>
           <CardContent>
             <div className="h-[200px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData.steps.data}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#2A2D3A" />
-                  <XAxis dataKey="month" stroke="#A1A1A1" />
+                  <XAxis dataKey={xAxisKey} stroke="#A1A1A1" />
                   <Tooltip content={<CustomTooltip />} />
                   <Area
                     type="monotone"
@@ -217,9 +414,10 @@ export default function HealthSummary() {
       </motion.div>
 
       {/* Glucose */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+      <motion.div 
+        key={`glucose-${timeRange}`}
+        initial={{ opacity: 0, y: 20 }} 
+        animate={{ opacity: 1, y: 0 }} 
         transition={{ duration: 0.5, delay: 0.2 }}
       >
         <Card>
@@ -228,15 +426,30 @@ export default function HealthSummary() {
               <CardTitle className="flex items-center">
                 <Droplets className="w-5 h-5 mr-2 text-[#06B6D4]" /> Glucose
               </CardTitle>
-              <Badge variant="info">{chartData.glucose.current} mg/dL</Badge>
+              <div className="flex items-center gap-2">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-8 w-8" 
+                  onClick={() => toggleInsight('glucose')}
+                >
+                  <Info className="h-4 w-4" />
+                </Button>
+                <Badge variant="info">{chartData.glucose.current} mg/dL</Badge>
+              </div>
             </div>
+            {showInsights.glucose && (
+              <div className="mt-2 text-sm bg-[#2A2D3A] p-2 rounded-md">
+                <p>{chartData.glucose.insight}</p>
+              </div>
+            )}
           </CardHeader>
           <CardContent>
             <div className="h-[200px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={chartData.glucose.data}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#2A2D3A" />
-                  <XAxis dataKey="month" stroke="#A1A1A1" />
+                  <XAxis dataKey={xAxisKey} stroke="#A1A1A1" />
                   <Tooltip content={<CustomTooltip />} />
                   <Line
                     type="monotone"
@@ -258,9 +471,10 @@ export default function HealthSummary() {
       </motion.div>
 
       {/* Sleep */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+      <motion.div 
+        key={`sleep-${timeRange}`}
+        initial={{ opacity: 0, y: 20 }} 
+        animate={{ opacity: 1, y: 0 }} 
         transition={{ duration: 0.5, delay: 0.3 }}
       >
         <Card>
@@ -269,15 +483,30 @@ export default function HealthSummary() {
               <CardTitle className="flex items-center">
                 <Moon className="w-5 h-5 mr-2 text-[#A1A1A1]" /> Sleep
               </CardTitle>
-              <Badge variant="default">{chartData.sleep.current} hrs</Badge>
+              <div className="flex items-center gap-2">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-8 w-8" 
+                  onClick={() => toggleInsight('sleep')}
+                >
+                  <Info className="h-4 w-4" />
+                </Button>
+                <Badge variant="default">{chartData.sleep.current} hrs</Badge>
+              </div>
             </div>
+            {showInsights.sleep && (
+              <div className="mt-2 text-sm bg-[#2A2D3A] p-2 rounded-md">
+                <p>{chartData.sleep.insight}</p>
+              </div>
+            )}
           </CardHeader>
           <CardContent>
             <div className="h-[200px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData.sleep.data}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#2A2D3A" />
-                  <XAxis dataKey="month" stroke="#A1A1A1" />
+                  <XAxis dataKey={xAxisKey} stroke="#A1A1A1" />
                   <Tooltip content={<CustomTooltip />} />
                   <Area
                     type="monotone"
@@ -302,9 +531,10 @@ export default function HealthSummary() {
       </motion.div>
 
       {/* Insights */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+      <motion.div 
+        key={`insights-${timeRange}`}
+        initial={{ opacity: 0, y: 20 }} 
+        animate={{ opacity: 1, y: 0 }} 
         transition={{ duration: 0.5, delay: 0.4 }}
       >
         <Card className="border-l-4 border-l-[#16A34A]">
@@ -314,7 +544,7 @@ export default function HealthSummary() {
           <CardContent className="space-y-3">
             <p className="text-sm">
               <span className="font-medium text-[#16A34A]">Improved Activity:</span> Your average steps increased by 12%
-              compared to last month.
+              compared to last {timeRange}.
             </p>
             <p className="text-sm">
               <span className="font-medium text-[#FF4D4D]">Heart Rate:</span> Your resting heart rate is slightly
@@ -322,7 +552,7 @@ export default function HealthSummary() {
             </p>
             <p className="text-sm">
               <span className="font-medium text-[#06B6D4]">Glucose:</span> Your glucose levels have remained stable
-              throughout the month.
+              throughout the {timeRange}.
             </p>
             <p className="text-sm">
               <span className="font-medium text-[#A1A1A1]">Sleep:</span> Your sleep duration has improved. Maintain your
@@ -334,4 +564,3 @@ export default function HealthSummary() {
     </div>
   )
 }
-

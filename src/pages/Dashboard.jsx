@@ -1,12 +1,15 @@
+"use client"
+
 import { useState, useEffect } from "react"
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card"
 import { Button } from "../components/ui/button"
 import { Badge } from "../components/ui/badge"
 import { Progress } from "../components/ui/progress"
-import { Heart, Footprints, Droplets, Award, TrendingUp, Lightbulb, FireExtinguisher, Flame } from 'lucide-react'
+import { Heart, Footprints, Droplets, Award, TrendingUp, Lightbulb, Flame } from "lucide-react"
 import { vitalService } from "../services/api"
 import { GoalSettingModal } from "../components/GoalSettingModal"
 import { motion } from "framer-motion"
+import { useNavigate } from "react-router-dom"
 
 // Dummy data for demonstration
 const healthData = {
@@ -30,13 +33,32 @@ const quotes = [
 ]
 
 export default function Dashboard() {
+  const navigate = useNavigate()
   const [quote, setQuote] = useState("")
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [stats, setStats] = useState({})
   const [isGoalModalOpen, setIsGoalModalOpen] = useState(false)
   const [goalSaved, setGoalSaved] = useState(false)
-  
+
+  // Hide chat bot when modal is open
+  useEffect(() => {
+    const chatBot = document.querySelector(".fixed.bottom-20.right-4.z-50")
+    if (chatBot) {
+      if (isGoalModalOpen) {
+        chatBot.style.display = "none"
+      } else {
+        chatBot.style.display = "block"
+      }
+    }
+
+    return () => {
+      if (chatBot) {
+        chatBot.style.display = "block"
+      }
+    }
+  }, [isGoalModalOpen])
+
   useEffect(() => {
     // Get a random quote
     const randomQuote = quotes[Math.floor(Math.random() * quotes.length)]
@@ -51,7 +73,7 @@ export default function Dashboard() {
         console.log("Data", data)
         setStats(data)
       } catch (err) {
-        setError(err.message || 'Failed to fetch dashboard stats')
+        setError(err.message || "Failed to fetch dashboard stats")
       } finally {
         setLoading(false)
       }
@@ -63,23 +85,26 @@ export default function Dashboard() {
   const handleSaveGoal = async (goalData) => {
     try {
       // In a real app, you would update the stats with the new goal
-      console.log("Goal saved:", goalData);
-      
+      console.log("Goal saved:", goalData)
+
       // Show success message
-      setGoalSaved(true);
-      setTimeout(() => setGoalSaved(false), 3000);
-      
+      setGoalSaved(true)
+      setTimeout(() => setGoalSaved(false), 3000)
     } catch (error) {
-      console.error("Error saving goal:", error);
+      console.error("Error saving goal:", error)
     }
-  };
+  }
+
+  const handleViewInsights = () => {
+    navigate("/health")
+  }
 
   if (loading) {
     return (
       <div className="flex items-center justify-center lg:h-[70vh] bg-[#191E29]">
         <motion.div
           animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          transition={{ duration: 1, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
           className="w-8 h-8 border-2 border-[#16A34A] border-t-transparent rounded-full"
         />
       </div>
@@ -87,13 +112,9 @@ export default function Dashboard() {
   }
 
   if (error) {
-    return (
-      <div className="bg-red-500/10 text-red-500 p-4 rounded-lg">
-        {error}
-      </div>
-    )
+    return <div className="bg-red-500/10 text-red-500 p-4 rounded-lg">{error}</div>
   }
- 
+
   return (
     <div className="space-y-6 page-transition">
       <header className="mb-6">
@@ -102,11 +123,7 @@ export default function Dashboard() {
       </header>
 
       {/* Quote Card */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
         <Card className="border-l-4 border-l-[#06B6D4]">
           <CardContent className="py-4">
             <div className="flex items-start gap-3">
@@ -122,7 +139,11 @@ export default function Dashboard() {
 
       {/* Key Vitals */}
       <div className="grid grid-cols-2 gap-4">
-        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3, delay: 0.1 }}>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+        >
           <Card>
             <CardContent className="p-4 flex flex-col items-center justify-center">
               <Heart className="w-8 h-8 text-[#FF4D4D] mb-2" />
@@ -133,7 +154,11 @@ export default function Dashboard() {
           </Card>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3, delay: 0.2 }}>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3, delay: 0.2 }}
+        >
           <Card>
             <CardContent className="p-4 flex flex-col items-center justify-center">
               <Footprints className="w-8 h-8 text-[#16A34A] mb-2" />
@@ -144,7 +169,11 @@ export default function Dashboard() {
           </Card>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3, delay: 0.3 }}>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3, delay: 0.3 }}
+        >
           <Card>
             <CardContent className="p-4 flex flex-col items-center justify-center">
               <Droplets className="w-8 h-8 text-[#06B6D4] mb-2" />
@@ -155,7 +184,11 @@ export default function Dashboard() {
           </Card>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3, delay: 0.4 }}>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3, delay: 0.4 }}
+        >
           <Card>
             <CardContent className="p-4 flex flex-col items-center justify-center">
               <Flame className="w-8 h-8 text-[#f93131] mb-2" />
@@ -168,21 +201,25 @@ export default function Dashboard() {
       </div>
 
       {/* Quick Actions */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.5 }}>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.5 }}
+      >
         <Card>
           <CardHeader>
             <CardTitle>Quick Actions</CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-2 gap-3">
-            <Button 
-              variant="primary" 
+            <Button
+              variant="primary"
               className="flex items-center justify-center gap-2"
               onClick={() => setIsGoalModalOpen(true)}
             >
               <Award className="w-4 h-4" />
               Set a Goal
             </Button>
-            <Button variant="secondary" className="flex items-center justify-center gap-2">
+            <Button variant="secondary" className="flex items-center justify-center gap-2" onClick={handleViewInsights}>
               <TrendingUp className="w-4 h-4" />
               View Insights
             </Button>
@@ -191,7 +228,11 @@ export default function Dashboard() {
       </motion.div>
 
       {/* Activity Summary */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.6 }}>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.6 }}
+      >
         <Card>
           <CardHeader>
             <CardTitle>Today's Activity</CardTitle>
@@ -202,30 +243,39 @@ export default function Dashboard() {
               <div>
                 <p className="text-sm text-[#A1A1A1]">Steps</p>
                 <p className="font-medium">
-                  {stats.aggregated.step_count.toLocaleString()} / {(stats.aggregated.step_count+10000).toLocaleString()}
+                  {stats.aggregated.step_count.toLocaleString()} /{" "}
+                  {(stats.aggregated.step_count + 10000).toLocaleString()}
                 </p>
               </div>
-              <Progress value={stats.aggregated.step_count} max={stats.aggregated.step_count+ 10000} className="w-1/2" />
+              <Progress
+                value={stats.aggregated.step_count}
+                max={stats.aggregated.step_count + 10000}
+                className="w-1/2"
+              />
             </div>
 
             <div className="flex justify-between items-center">
               <div>
                 <p className="text-sm text-[#A1A1A1]">Distance</p>
                 <p className="font-medium">
-                {stats.aggregated.step_count.toFixed(0)} km / {(stats.aggregated.step_count * 1.2).toFixed(0)} km
+                  {stats.aggregated.step_count.toFixed(0)} km / {(stats.aggregated.step_count * 1.2).toFixed(0)} km
                 </p>
               </div>
-              <Progress value={stats.aggregated.step_count} max={(stats.aggregated.step_count * 1.2)} className="w-1/2" />
+              <Progress value={stats.aggregated.step_count} max={stats.aggregated.step_count * 1.2} className="w-1/2" />
             </div>
 
             <div className="flex justify-between items-center">
               <div>
                 <p className="text-sm text-[#A1A1A1]">Calories</p>
                 <p className="font-medium">
-                  {stats.aggregated.calories_burned.toFixed(0)} / {(stats.aggregated.calories_burned *1.2).toFixed(0)}
+                  {stats.aggregated.calories_burned.toFixed(0)} / {(stats.aggregated.calories_burned * 1.2).toFixed(0)}
                 </p>
               </div>
-              <Progress value={stats.aggregated.calories_burned} max={stats.aggregated.calories_burned *1.2} className="w-1/2" />
+              <Progress
+                value={stats.aggregated.calories_burned}
+                max={stats.aggregated.calories_burned * 1.2}
+                className="w-1/2"
+              />
             </div>
 
             <div className="flex justify-between items-center">
@@ -242,11 +292,7 @@ export default function Dashboard() {
       </motion.div>
 
       {/* Goal Setting Modal */}
-      <GoalSettingModal 
-        isOpen={isGoalModalOpen} 
-        onClose={() => setIsGoalModalOpen(false)} 
-        onSave={handleSaveGoal}
-      />
+      <GoalSettingModal isOpen={isGoalModalOpen} onClose={() => setIsGoalModalOpen(false)} onSave={handleSaveGoal} />
 
       {/* Success Message */}
       {goalSaved && (
@@ -265,3 +311,4 @@ export default function Dashboard() {
     </div>
   )
 }
+

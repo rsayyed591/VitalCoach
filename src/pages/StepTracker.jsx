@@ -1,10 +1,11 @@
+"use client"
+
 import { useState, useEffect } from "react"
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card"
 import { Button } from "../components/ui/button"
 import { Badge } from "../components/ui/badge"
-import { Progress } from "../components/ui/progress"
-import { Footprints, Award, Users, ChevronRight, Calendar, Clock, Flame, Zap } from 'lucide-react'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
+import { Footprints, Award, Users, ChevronRight, Calendar, Clock, Flame, Zap } from "lucide-react"
+import { BarChart, Bar, XAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 import confetti from "canvas-confetti"
 import { motion } from "framer-motion"
 
@@ -78,10 +79,10 @@ export default function StepTracker() {
 
   // Calculate percentage of goal
   const goalPercentage = Math.min(100, Math.round((currentSteps / stepData.goal) * 100))
-  
+
   // Calculate calories burned (rough estimate)
   const caloriesBurned = Math.round(currentSteps * 0.04)
-  
+
   // Calculate distance (rough estimate)
   const distanceKm = (currentSteps * 0.0008).toFixed(2)
 
@@ -120,11 +121,7 @@ export default function StepTracker() {
       {activeTab === "overview" && (
         <>
           {/* Step Counter */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
             <Card className="relative overflow-hidden">
               <CardContent className="p-6">
                 <div className="absolute inset-0 bg-gradient-to-br from-[#16A34A]/20 to-[#06B6D4]/20 z-0"></div>
@@ -133,14 +130,7 @@ export default function StepTracker() {
                     <div className="absolute inset-0 flex items-center justify-center">
                       <svg className="w-full h-full" viewBox="0 0 100 100">
                         {/* Background circle */}
-                        <circle
-                          cx="50"
-                          cy="50"
-                          r="45"
-                          fill="none"
-                          stroke="#2A2D3A"
-                          strokeWidth="8"
-                        />
+                        <circle cx="50" cy="50" r="45" fill="none" stroke="#2A2D3A" strokeWidth="8" />
                         {/* Progress circle */}
                         <motion.circle
                           cx="50"
@@ -152,8 +142,8 @@ export default function StepTracker() {
                           strokeLinecap="round"
                           strokeDasharray={`${2 * Math.PI * 45}`}
                           initial={{ strokeDashoffset: 2 * Math.PI * 45 }}
-                          animate={{ 
-                            strokeDashoffset: 2 * Math.PI * 45 * (1 - goalPercentage / 100) 
+                          animate={{
+                            strokeDashoffset: 2 * Math.PI * 45 * (1 - goalPercentage / 100),
                           }}
                           transition={{ duration: 1, ease: "easeInOut" }}
                           transform="rotate(-90 50 50)"
@@ -166,13 +156,13 @@ export default function StepTracker() {
                       </div>
                     </div>
                   </div>
-                  
+
                   <p className="text-center text-sm text-[#A1A1A1] mb-4">
                     {goalPercentage}% of daily goal ({stepData.goal.toLocaleString()} steps)
                   </p>
 
                   {goalReached && (
-                    <motion.div 
+                    <motion.div
                       initial={{ scale: 0.8, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       transition={{ duration: 0.3 }}
@@ -188,31 +178,43 @@ export default function StepTracker() {
             </Card>
           </motion.div>
 
-          {/* Stats Cards */}
+          {/* Stats Cards - Fixed to have same height */}
           <div className="grid grid-cols-3 gap-3">
-            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3, delay: 0.1 }}>
-              <Card>
-                <CardContent className="p-3 flex flex-col items-center justify-center">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3, delay: 0.1 }}
+            >
+              <Card className="h-full">
+                <CardContent className="p-3 flex flex-col items-center justify-center h-full">
                   <Flame className="w-5 h-5 text-[#FF4D4D] mb-1" />
                   <p className="text-xs text-[#A1A1A1]">Calories</p>
                   <p className="text-lg font-bold">{caloriesBurned}</p>
                 </CardContent>
               </Card>
             </motion.div>
-            
-            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3, delay: 0.2 }}>
-              <Card>
-                <CardContent className="p-3 flex flex-col items-center justify-center">
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3, delay: 0.2 }}
+            >
+              <Card className="h-full">
+                <CardContent className="p-3 flex flex-col items-center justify-center h-full">
                   <Zap className="w-5 h-5 text-[#16A34A] mb-1" />
                   <p className="text-xs text-[#A1A1A1]">Distance</p>
                   <p className="text-lg font-bold">{distanceKm} km</p>
                 </CardContent>
               </Card>
             </motion.div>
-            
-            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3, delay: 0.3 }}>
-              <Card>
-                <CardContent className="p-3 flex flex-col items-center justify-center">
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3, delay: 0.3 }}
+            >
+              <Card className="h-full">
+                <CardContent className="p-3 flex flex-col items-center justify-center h-full">
                   <Clock className="w-5 h-5 text-[#06B6D4] mb-1" />
                   <p className="text-xs text-[#A1A1A1]">Active Time</p>
                   <p className="text-lg font-bold">{Math.round(currentSteps / 1000)} min</p>
@@ -222,7 +224,11 @@ export default function StepTracker() {
           </div>
 
           {/* Weekly Progress */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.4 }}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
             <Card>
               <CardHeader>
                 <CardTitle>Weekly Progress</CardTitle>
@@ -259,7 +265,7 @@ export default function StepTracker() {
               </Button>
             ))}
           </div>
-          
+
           <Card>
             <CardHeader>
               <CardTitle>Activity History</CardTitle>
@@ -300,22 +306,28 @@ export default function StepTracker() {
             </CardHeader>
             <CardContent className="space-y-4">
               {stepData.friends.map((friend, index) => (
-                <motion.div 
-                  key={index} 
+                <motion.div
+                  key={index}
                   className="flex items-center justify-between"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.3, delay: index * 0.1 }}
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-full ${index === 0 ? 'bg-[#FFD700]' : index === 1 ? 'bg-[#C0C0C0]' : index === 2 ? 'bg-[#CD7F32]' : 'bg-[#2A2D3A]'} flex items-center justify-center text-sm font-medium`}>
+                    <div
+                      className={`w-10 h-10 rounded-full ${index === 0 ? "bg-[#FFD700]" : index === 1 ? "bg-[#C0C0C0]" : index === 2 ? "bg-[#CD7F32]" : "bg-[#2A2D3A]"} flex items-center justify-center text-sm font-medium`}
+                    >
                       {friend.avatar}
                     </div>
                     <div>
                       <p className="font-medium">{friend.name}</p>
                       <div className="flex items-center gap-2">
                         <p className="text-xs text-[#A1A1A1]">{friend.steps.toLocaleString()} steps</p>
-                        {index === 0 && <Badge variant="success" className="text-xs">Leader</Badge>}
+                        {index === 0 && (
+                          <Badge variant="success" className="text-xs">
+                            Leader
+                          </Badge>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -342,3 +354,4 @@ export default function StepTracker() {
     </div>
   )
 }
+
