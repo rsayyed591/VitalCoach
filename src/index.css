@@ -121,5 +121,64 @@
       transform: scale(0.95);
     }
   }
+
+  /* Typing animation for chatbot */
+  .typing-cursor {
+    display: inline-block;
+    width: 0.5em;
+    height: 1em;
+    background-color: currentColor;
+    margin-left: 0.1em;
+    animation: blink 1s step-end infinite;
+  }
+
+  @keyframes blink {
+    from,
+    to {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+  }
+
+  /* Loading dots animation */
+  .loading-dots::after {
+    content: "";
+    animation: dots 1.5s infinite;
+  }
+
+  @keyframes dots {
+    0%,
+    20% {
+      content: ".";
+    }
+    40% {
+      content: "..";
+    }
+    60%,
+    100% {
+      content: "...";
+    }
+  }
+
+  /* Custom goal loader animation */
+  @keyframes rotate {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .goal-loader {
+    animation: rotate 1.5s linear infinite;
+  }
+
+  /* Fade in animation for chat messages */
+  .fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+  }
 }
 
