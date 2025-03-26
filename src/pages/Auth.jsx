@@ -53,7 +53,6 @@ export default function AuthPage() {
     </p>
   </div>
 </CardHeader>
-
       
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
