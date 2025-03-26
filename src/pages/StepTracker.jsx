@@ -213,49 +213,42 @@ export default function StepTracker() {
           </motion.div>
 
           {/* Stats Cards - Fixed to have same height */}
-          <div className="grid grid-cols-3 gap-3">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3, delay: 0.1 }}
-            >
-              <Card className="h-full">
-                <CardContent className="p-3 flex flex-col items-center justify-center h-full">
-                  <Flame className="w-5 h-5 text-[#FF4D4D] mb-1" />
-                  <p className="text-xs text-[#A1A1A1]">Calories</p>
-                  <p className="text-lg font-bold">{stats.vitals.calories_burned}</p>
-                </CardContent>
-              </Card>
-            </motion.div>
+          <div className="grid grid-cols-3 gap-3 auto-rows-fr">
+  {[
+    {
+      icon: <Flame className="w-5 h-5 text-[#FF4D4D] mb-1" />,
+      label: "Calories",
+      value: stats.vitals.calories_burned,
+    },
+    {
+      icon: <Zap className="w-5 h-5 text-[#16A34A] mb-1" />,
+      label: "Distance",
+      value: `${distanceKm} km`,
+    },
+    {
+      icon: <Clock className="w-5 h-5 text-[#06B6D4] mb-1" />,
+      label: "Active Time",
+      value: `${Math.round(currentSteps / 1000)} min`,
+    },
+  ].map((item, index) => (
+    <motion.div
+      key={index}
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.3, delay: 0.1 * (index + 1) }}
+      className="h-full"
+    >
+      <Card className="h-full flex flex-col justify-between">
+        <CardContent className="p-3 flex flex-col items-center justify-center min-h-[100px]">
+          {item.icon}
+          <p className="text-xs text-[#A1A1A1]">{item.label}</p>
+          <p className="text-lg font-bold">{item.value}</p>
+        </CardContent>
+      </Card>
+    </motion.div>
+  ))}
+</div>
 
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3, delay: 0.2 }}
-            >
-              <Card className="h-full">
-                <CardContent className="p-3 flex flex-col items-center justify-center h-full">
-                  <Zap className="w-5 h-5 text-[#16A34A] mb-1" />
-                  <p className="text-xs text-[#A1A1A1]">Distance</p>
-                  <p className="text-lg font-bold">{distanceKm} km</p>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3, delay: 0.3 }}
-            >
-              <Card className="h-full">
-                <CardContent className="p-3 flex flex-col items-center justify-center h-full">
-                  <Clock className="w-5 h-5 text-[#06B6D4] mb-1" />
-                  <p className="text-xs text-[#A1A1A1]">Active Time</p>
-                  <p className="text-lg font-bold">{Math.round(currentSteps / 1000)} min</p>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </div>
 
           {/* Weekly Progress */}
           <motion.div

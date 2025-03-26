@@ -97,105 +97,109 @@ export default function OTPPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-[#121212]">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-md"
-      >
-        <Card className="border-none shadow-lg bg-[#1E1E1E]">
-          <CardHeader className="pb-2">
-            <div className="w-16 h-16 rounded-full bg-[#16A34A]/20 flex items-center justify-center mx-auto mb-4">
-              <Shield className="w-8 h-8 text-[#16A34A]" />
-            </div>
-            <CardTitle className="text-2xl font-bold text-center text-white">Verify OTP</CardTitle>
-            <p className="text-[#A1A1A1] text-center mt-2">
-              We've sent a verification code to {phoneNumber ? `+91 ${phoneNumber}` : "your phone"}
-            </p>
-          </CardHeader>
-          <CardContent>
-            <AnimatePresence mode="wait">
-              {verified ? (
-                <motion.div
-                  key="success"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  className="flex flex-col items-center justify-center py-4"
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5 }}
+    className="w-full max-w-md"
+  >
+    <Card className="border-none shadow-lg bg-[#1E1E1E]">
+      <CardHeader className="pb-2">
+        <div className="w-16 h-16 rounded-full bg-[#16A34A]/20 flex items-center justify-center mx-auto mb-4">
+          <Shield className="w-8 h-8 text-[#16A34A]" />
+        </div>
+        <div className="text-center">
+          <CardTitle className="text-2xl font-bold text-white">Verify OTP</CardTitle>
+          <p className="text-[#A1A1A1] text-sm mt-1">
+            We've sent a verification code to {phoneNumber ? `+91 ${phoneNumber}` : "your phone"}
+          </p>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <AnimatePresence mode="wait">
+          {verified ? (
+            <motion.div
+              key="success"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className="flex flex-col items-center justify-center py-4"
+            >
+              <div className="w-16 h-16 rounded-full bg-[#16A34A]/20 flex items-center justify-center mb-4">
+                <CheckCircle className="w-8 h-8 text-[#16A34A]" />
+              </div>
+              <h3 className="text-xl font-bold text-white">Verification Successful</h3>
+              <p className="text-[#A1A1A1] text-center mt-2">Redirecting to dashboard...</p>
+            </motion.div>
+          ) : (
+            <motion.form
+              key="form"
+              onSubmit={handleSubmit}
+              className="space-y-4"
+              initial={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <div className="flex justify-center gap-2">
+                {[...Array(6)].map((_, index) => (
+                  <input
+                    key={index}
+                    type="text"
+                    maxLength={1}
+                    value={otp[index] || ""}
+                    onChange={(e) => handleInputChange(index, e.target.value)}
+                    onKeyDown={(e) => handleKeyDown(index, e)}
+                    ref={(el) => (inputRefs.current[index] = el)}
+                    className="w-12 h-14 text-center text-xl font-bold bg-[#2A2D3A] text-white border-none rounded-lg focus:outline-none focus:ring-2 focus:ring-[#16A34A] transition-all"
+                  />
+                ))}
+              </div>
+              {error && <p className="text-[#FF4D4D] text-sm text-center">{error}</p>}
+
+              <div className="flex justify-between items-center">
+                <button
+                  type="button"
+                  onClick={handleGoBack}
+                  className="text-[#A1A1A1] hover:text-white flex items-center gap-1 text-sm"
                 >
-                  <div className="w-16 h-16 rounded-full bg-[#16A34A]/20 flex items-center justify-center mb-4">
-                    <CheckCircle className="w-8 h-8 text-[#16A34A]" />
-                  </div>
-                  <h3 className="text-xl font-bold text-white">Verification Successful</h3>
-                  <p className="text-[#A1A1A1] text-center mt-2">Redirecting to dashboard...</p>
-                </motion.div>
-              ) : (
-                <motion.form
-                  key="form"
-                  onSubmit={handleSubmit}
-                  className="space-y-4"
-                  initial={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
+                  <ArrowLeft className="w-4 h-4" /> Back
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleResendOTP}
+                  className={`text-sm ${timeLeft === 0 ? "text-[#16A34A] hover:underline" : "text-[#A1A1A1]"}`}
+                  disabled={timeLeft > 0}
                 >
-                  <div className="space-y-2">
-                    <div className="flex justify-center gap-2">
-                      {[...Array(6)].map((_, index) => (
-                        <input
-                          key={index}
-                          type="text"
-                          maxLength={1}
-                          value={otp[index] || ""}
-                          onChange={(e) => handleInputChange(index, e.target.value)}
-                          onKeyDown={(e) => handleKeyDown(index, e)}
-                          ref={(el) => (inputRefs.current[index] = el)}
-                          className="w-12 h-14 text-center text-xl font-bold bg-[#2A2D3A] text-white border-none rounded-lg focus:outline-none focus:ring-2 focus:ring-[#16A34A] transition-all"
-                        />
-                      ))}
-                    </div>
-                    {error && <p className="text-[#FF4D4D] text-sm text-center">{error}</p>}
-                  </div>
+                  {timeLeft > 0 ? `Resend in ${timeLeft}s` : "Resend OTP"}
+                </button>
+              </div>
 
-                  <div className="flex justify-between items-center">
-                    <button
-                      type="button"
-                      onClick={handleGoBack}
-                      className="text-[#A1A1A1] hover:text-white flex items-center gap-1 text-sm"
-                    >
-                      <ArrowLeft className="w-4 h-4" /> Back
-                    </button>
+              <motion.div whileTap={{ scale: 0.95 }}>
+                <Button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-[#16A34A] to-[#06B6D4] hover:opacity-90 text-white py-3 rounded-lg font-medium flex items-center justify-center gap-2"
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  ) : (
+                    <>
+                      Verify OTP <ArrowRight className="w-4 h-4" />
+                    </>
+                  )}
+                </Button>
+              </motion.div>
 
-                    <button
-                      type="button"
-                      onClick={handleResendOTP}
-                      className={`text-sm ${timeLeft === 0 ? "text-[#16A34A] hover:underline" : "text-[#A1A1A1]"}`}
-                      disabled={timeLeft > 0}
-                    >
-                      {timeLeft > 0 ? `Resend in ${timeLeft}s` : "Resend OTP"}
-                    </button>
-                  </div>
-
-                  <motion.div whileTap={{ scale: 0.95 }}>
-                    <Button
-                      type="submit"
-                      className="w-full bg-gradient-to-r from-[#16A34A] to-[#06B6D4] hover:opacity-90 text-white py-3 rounded-lg font-medium flex items-center justify-center gap-2"
-                      disabled={isLoading}
-                    >
-                      {isLoading ? (
-                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      ) : (
-                        <>
-                          Verify OTP <ArrowRight className="w-4 h-4" />
-                        </>
-                      )}
-                    </Button>
-                  </motion.div>
-                </motion.form>
-              )}
-            </AnimatePresence>
-          </CardContent>
-        </Card>
-      </motion.div>
-    </div>
+              <p className="text-[#A1A1A1] text-xs text-center mt-4">
+                By continuing, you agree to our Terms of Service and Privacy Policy
+              </p>
+            </motion.form>
+          )}
+        </AnimatePresence>
+      </CardContent>
+    </Card>
+  </motion.div>
+</div>
   )
 }
 

@@ -233,58 +233,51 @@ export default function Dashboard() {
       >
         <Card>
           <CardHeader>
-            <CardTitle>Today's Activity</CardTitle>
+            <CardTitle>Monthly Activity</CardTitle>
             <Badge variant="success">On Track</Badge>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex justify-between items-center">
-              <div>
-                <p className="text-sm text-[#A1A1A1]">Steps</p>
-                <p className="font-medium">
-                  {stats.aggregated.step_count.toLocaleString()} /{" "}
-                  {(stats.aggregated.step_count + 10000).toLocaleString()}
-                </p>
-              </div>
-              <Progress
-                value={stats.aggregated.step_count}
-                max={stats.aggregated.step_count + 10000}
-                className="w-1/2"
-              />
-            </div>
+          <div className="space-y-4">
+  {[
+    {
+      label: "Steps",
+      value: stats.aggregated.step_count,
+      max: stats.aggregated.step_count + 10000,
+      unit: "",
+    },
+    {
+      label: "Distance",
+      value: stats.aggregated.distance_traveled_km.toFixed(0),
+      max: (stats.aggregated.distance_traveled_km * 1.2).toFixed(0),
+      unit: " km",
+    },
+    {
+      label: "Calories",
+      value: (stats.aggregated.calories_burned / 10).toFixed(0),
+      max: (stats.aggregated.calories_burned * 1.2 / 10).toFixed(0),
+      unit: " kcal",
+    },
+    {
+      label: "Glucose",
+      value: stats.vitals.blood_sugar,
+      max: (stats.vitals.blood_sugar * 1.2).toFixed(0),
+      unit: " mg/dL",
+    },
+  ].map((item, index) => (
+    <div key={index} className="flex justify-between items-center w-full gap-4">
+      <div className="min-w-[100px]">
+        <p className="text-sm text-[#A1A1A1]">{item.label}</p>
+        <p className="text-xs font-medium">
+          {item.value}
+          {item.unit} / {item.max}
+          {item.unit}
+        </p>
+      </div>
+      <Progress value={item.value} max={item.max} className="w-2/3" />
+    </div>
+  ))}
+</div>
 
-            <div className="flex justify-between items-center">
-              <div>
-                <p className="text-sm text-[#A1A1A1]">Distance</p>
-                <p className="font-medium">
-                  {stats.aggregated.step_count.toFixed(0)} km / {(stats.aggregated.step_count * 1.2).toFixed(0)} km
-                </p>
-              </div>
-              <Progress value={stats.aggregated.step_count} max={stats.aggregated.step_count * 1.2} className="w-1/2" />
-            </div>
-
-            <div className="flex justify-between items-center">
-              <div>
-                <p className="text-sm text-[#A1A1A1]">Calories</p>
-                <p className="font-medium">
-                  {stats.aggregated.calories_burned.toFixed(0)} / {(stats.aggregated.calories_burned * 1.2).toFixed(0)}
-                </p>
-              </div>
-              <Progress
-                value={stats.aggregated.calories_burned}
-                max={stats.aggregated.calories_burned * 1.2}
-                className="w-1/2"
-              />
-            </div>
-
-            <div className="flex justify-between items-center">
-              <div>
-                <p className="text-sm text-[#A1A1A1]">Heart Rate</p>
-                <p className="font-medium">
-                  {stats.aggregated.heart_rate}bpm / {(stats.aggregated.heart_rate * 1.2).toFixed(0)}bpm
-                </p>
-              </div>
-              <Progress value={stats.aggregated.heart_rate} max={stats.aggregated.heart_rate * 1.2} className="w-1/2" />
-            </div>
           </CardContent>
         </Card>
       </motion.div>
@@ -309,4 +302,3 @@ export default function Dashboard() {
     </div>
   )
 }
-

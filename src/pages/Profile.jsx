@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
@@ -400,40 +398,36 @@ export default function Profile() {
 
             {/* Profile Header */}
             <div className="flex items-center p-4 pt-6">
-              {/* <div className="w-20 h-20 rounded-full bg-[#2A2D3A] flex items-center justify-center text-xl font-bold">
-                {profileData.name.charAt(0)}
-              </div> */}
-              <img
-                src="/pfp.png"
-                alt="pfp"
-                className="w-20 h-20 rounded-full bg-[#2A2D3A] flex items-center justify-center text-xl font-bold"
-              />
-              <div className="ml-4 flex-1">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h2 className="text-xl font-bold">{profileData.name}</h2>
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-1">
-                      <p className="text-[#A1A1A1] text-sm flex items-center">
-                        <span className="w-16">Age:</span>
-                        <span className="font-medium text-white">{profileData.age}Y</span>
-                      </p>
-                      <p className="text-[#A1A1A1] text-sm flex items-center">
-                        <span className="w-16">Height:</span>
-                        <span className="font-medium text-white">{profileData.height}cm</span>
-                      </p>
-                      <p className="text-[#A1A1A1] text-sm flex items-center">
-                        <span className="w-16">Weight:</span>
-                        <span className="font-medium text-white">{profileData.weight}kg</span>
-                      </p>
-                      <p className="text-[#A1A1A1] text-sm flex items-center">
-                        <span className="w-16">Streak:</span>
-                        <span className="font-medium text-white">{streakCount}D</span>
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+  {/* Profile Image */}
+  <div className="w-20 h-20 rounded-full bg-[#2A2D3A] flex items-center justify-center overflow-hidden">
+    <img
+      src="/pfp.png"
+      alt="pfp"
+      className="w-full h-full object-cover"
+    />
+  </div>
+
+  {/* Profile Details */}
+  <div className="ml-4 flex-1">
+    <h2 className="text-xl font-bold">{profileData.name}</h2>
+
+    {/* User Info Grid */}
+    <div className="grid grid-cols-2 gap-x-6 gap-y-1 mt-2">
+      {[
+        { label: "Age:", value: `${profileData.age}Y` },
+        { label: "Height:", value: `${profileData.height}cm` },
+        { label: "Weight:", value: `${profileData.weight}kg` },
+        { label: "Streak:", value: `${streakCount}D` },
+      ].map((item, index) => (
+        <p key={index} className="text-[#A1A1A1] text-sm flex items-center">
+          <span className="w-20">{item.label}</span>
+          <span className="font-medium text-white">{item.value}</span>
+        </p>
+      ))}
+    </div>
+  </div>
+</div>
+
 
             {/* Streak Badge */}
             <div className="flex justify-between items-center px-4 pb-2">
